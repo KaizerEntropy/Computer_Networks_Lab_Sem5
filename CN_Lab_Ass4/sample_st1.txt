@@ -1,0 +1,4 @@
+Station 1: Exploring Orthogonal Direct-Sequence Spread Spectrum communication.
+When any two distinct Walsh codes W_i and W_j are cross-correlated over a symbol period,
+their normalized inner product is strictly zero: (W_i . W_j) / M = 0.
+This mathematical property allows multiple stations to share the exact same frequency spectrum concurrently!

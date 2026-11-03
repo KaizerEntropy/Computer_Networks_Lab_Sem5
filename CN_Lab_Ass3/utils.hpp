@@ -8,13 +8,19 @@ enum class MsgType : uint8_t {
     SENSE_REPLY_BUSY = 3,
     TRANSMIT = 4,
     SUCCESS = 5,
-    COLLISION = 6
+    COLLISION = 6,
+    TRANSMIT_CD = 7,
+    EXIT = 8,
+    ERROR_LOST = 9,
+    ERROR_CORRUPT = 10
 };
 
 struct Message {
     MsgType type;
     int station_id;
     int data; // Can be frame number
+    double prob_error;
+    double prob_loss;
 };
 
 struct AddrComparator {

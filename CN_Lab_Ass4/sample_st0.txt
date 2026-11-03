@@ -1,0 +1,4 @@
+Station 0: Jadavpur University Computer Networks Lab Assignment 4.
+Code Division Multiple Access (CDMA) with orthogonal Walsh-Hadamard codes.
+This data stream was encoded using Walsh Code W0, sent across the shared common channel,
+superimposed with signals from all other active stations, and reconstructed with 100% bit accuracy!

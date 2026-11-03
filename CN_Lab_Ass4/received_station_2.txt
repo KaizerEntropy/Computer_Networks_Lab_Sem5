@@ -1,0 +1,4 @@
+Station 2: Linear superposition occurs on the physical transmission channel.
+The medium vector at time slot t is given by C[t] = sum(d_i[t] * W_i).
+At the receiver, evaluating the projection onto W2 isolates Station 2's bits
+while eliminating all interference from Station 0, Station 1, and Station 3.

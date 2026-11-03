@@ -1,0 +1,4 @@
+Station 3: Frame Check Sequence (CRC-32) verification across CDMA frames.
+Each station constructs standard frames containing headers, sequence numbers, and CRC-32 checksums.
+Once the composite stream is demultiplexed, the receiver computes the CRC-32 remainder
+and validates that zero bit errors occurred during multi-station CDMA transmission!
