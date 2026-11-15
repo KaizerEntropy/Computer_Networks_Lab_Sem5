@@ -1,0 +1,89 @@
+================================================================================
+CISCO PACKET TRACER EXPERIMENT GUIDE: PROBLEM 5
+Inter-Campus Dual-LAN Routing (JU-Main and JU-SL) via Cisco Routers & Static Routing
+================================================================================
+
+1. TOPOLOGY & IP ALLOCATION MATRIX:
+--------------------------------------------------------------------------------
+Device Name      Interface   IP Address       Subnet Mask      Default Gateway
+--------------------------------------------------------------------------------
+[LAN 1: JU-Main Campus (192.168.148.0/24)]
+Host-M1 (PC1)    Fa0         192.168.148.2    255.255.255.0    192.168.148.1
+Host-M2 (PC2)    Fa0         192.168.148.3    255.255.255.0    192.168.148.1
+Host-M3 (PC3)    Fa0         192.168.148.4    255.255.255.0    192.168.148.1
+PC-LAB1-Switch   Vlan1       Unmanaged L2     -                -
+Router-JU-Main   Fa0/0       192.168.148.1    255.255.255.0    -
+
+[WAN Point-to-Point Link (192.168.150.0/24)]
+Router-JU-Main   Fa0/1       192.168.150.1    255.255.255.0    -
+Router-JU-SL     Fa0/1       192.168.150.2    255.255.255.0    -
+
+[LAN 2: JU-SL Salt Lake Campus (192.168.149.0/24)]
+Router-JU-SL     Fa0/0       192.168.149.1    255.255.255.0    -
+PC-LAB2-Switch   Vlan1       Unmanaged L2     -                -
+Host-S1 (PC4)    Fa0         192.168.149.2    255.255.255.0    192.168.149.1
+Host-S2 (PC5)    Fa0         192.168.149.3    255.255.255.0    192.168.149.1
+Host-S3 (PC6)    Fa0         192.168.149.4    255.255.255.0    192.168.149.1
+--------------------------------------------------------------------------------
+
+2. CABLE SELECTION SUMMARY:
+- PC to Switch: Copper Straight-Through Cable (DTE to DCE).
+- Switch to Router: Copper Straight-Through Cable (DCE to DTE).
+- Router to Router (FastEthernet0/1 <-> FastEthernet0/1): Copper Cross-Over Cable (DTE to DTE).
+  (Or Serial DTE/DCE cable if Serial WIC interfaces are installed).
+
+3. STATIC ROUTING COMMANDS:
+- On Router-JU-Main:
+  Router-JU-Main(config)# ip route 192.168.149.0 255.255.255.0 192.168.150.2
+- On Router-JU-SL:
+  Router-JU-SL(config)# ip route 192.168.148.0 255.255.255.0 192.168.150.1
+
+4. INTER-LAN PING EXECUTION & TRACEROUTE:
+From Host-M1 (192.168.148.2) in JU-Main to Host-S1 (192.168.149.2) in JU-SL:
+> ping 192.168.149.2
+
+Pinging 192.168.149.2 with 32 bytes of data:
+Request timed out.   <--- First packet dropped due to cold ARP resolution on SL LAN
+Reply from 192.168.149.2: bytes=32 time=12ms TTL=126
+Reply from 192.168.149.2: bytes=32 time=10ms TTL=126
+Reply from 192.168.149.2: bytes=32 time=11ms TTL=126
+
+Ping statistics for 192.168.149.2:
+    Packets: Sent = 4, Received = 3, Lost = 1 (25% loss)
+
+Subsequent Ping (Warm ARP):
+> ping 192.168.149.2
+Reply from 192.168.149.2: bytes=32 time=10ms TTL=126
+Reply from 192.168.149.2: bytes=32 time=10ms TTL=126
+Reply from 192.168.149.2: bytes=32 time=10ms TTL=126
+Reply from 192.168.149.2: bytes=32 time=10ms TTL=126
+Sent = 4, Received = 4, Lost = 0 (0% loss)
+
+Traceroute Execution:
+> tracert 192.168.149.2
+
+Tracing route to 192.168.149.2 over a maximum of 30 hops:
+  1   <1 ms   <1 ms   <1 ms   192.168.148.1  (Router-JU-Main LAN Gateway)
+  2    5 ms    4 ms    5 ms   192.168.150.2  (Router-JU-SL WAN Interface)
+  3   10 ms   10 ms   11 ms   192.168.149.2  (Host-S1 Destination)
+Trace complete.
+
+5. PACKET LIFECYCLE & FORWARDING WALKTHROUGH:
+Step 1: Host-M1 compares destination IP 192.168.149.2 with its subnet 192.168.148.0/24.
+        Since it is on a remote subnet, Host-M1 must forward the packet to its Default
+        Gateway: 192.168.148.1.
+Step 2: Host-M1 resolves Router-JU-Main Fa0/0 MAC via ARP and transmits an Ethernet frame
+        encapsulating the IP packet (Src IP: 192.168.148.2, Dst IP: 192.168.149.2).
+Step 3: PC-LAB1-Switch switches the frame to port Fa0/24.
+Step 4: Router-JU-Main receives frame, strips Ethernet header, inspects Dst IP 192.168.149.2.
+Step 5: Router-JU-Main consults routing table; matches static route "192.168.149.0/24 via 192.168.150.2".
+Step 6: Router-JU-Main decrements TTL (128 -> 127), recomputes IPv4 checksum.
+Step 7: Router-JU-Main resolves next-hop 192.168.150.2 MAC and transmits across WAN link on Fa0/1.
+Step 8: Router-JU-SL receives frame on Fa0/1, decrements TTL (127 -> 126), matches connected route
+        "192.168.149.0/24 directly connected to Fa0/0".
+Step 9: Router-JU-SL broadcasts ARP for 192.168.149.2 (causing the 1st packet timeout if cold),
+        encapsulates into Ethernet frame with Host-S1 MAC as destination, and forwards via Fa0/0.
+Step 10: Host-S1 receives ICMP Echo Request and generates ICMP Echo Reply back through its Default
+         Gateway (192.168.149.1), traversing the reverse path symmetrically.
+================================================================================
+

@@ -1,0 +1,119 @@
+
+================================================================================
+ EXPERIMENT 4: INTERCONNECTING LAN-A (HUB) & LAN-B (SWITCH) VIA CROSSOVER
+================================================================================
+[Topology Interconnect]:
+  Hub-A (FastEthernet3) <=== [Crossover Cable] ===> Switch-B (FastEthernet0/4)
+
+>>> [PHASE 1: BEFORE CROSS-LAN PINGS - RECORD TABLES] <<<
+------------------------------------------------------------
+ ARP Cache on Host-A1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+Total Mac Addresses for this module: 0
+
+>>> [PHASE 2: EXECUTE CROSS-LAN PINGS] <<<
+
+[Cross-Ping 1: Host-A1 (192.168.1.1) -> Host-B1 (192.168.1.4)]
+
+Pinging 192.168.1.4 with 32 bytes of data:
+Reply from 192.168.1.4: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.4:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 2: Host-A2 (192.168.1.2) -> Host-B2 (192.168.1.5)]
+
+Pinging 192.168.1.5 with 32 bytes of data:
+Reply from 192.168.1.5: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.5:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 3: Host-A3 (192.168.1.3) -> Host-B3 (192.168.1.6)]
+
+Pinging 192.168.1.6 with 32 bytes of data:
+Reply from 192.168.1.6: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.6:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 4: Host-B1 (192.168.1.4) -> Host-A2 (192.168.1.2)]
+
+Pinging 192.168.1.2 with 32 bytes of data:
+Reply from 192.168.1.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+>>> [PHASE 3: AFTER CROSS-LAN PINGS - RECORD TABLES] <<<
+
+--- Host-A1 ARP Table (Post-Ping) ---
+------------------------------------------------------------
+ ARP Cache on Host-A1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.2           0002.16a2.0002        dynamic
+  192.168.1.3           0002.16a3.0003        dynamic
+  192.168.1.4           0060.2f11.0001        dynamic
+------------------------------------------------------------
+
+--- Host-B1 ARP Table (Post-Ping) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.1           0002.16a1.0001        dynamic
+  192.168.1.2           0002.16a2.0002        dynamic
+  192.168.1.3           0002.16a3.0003        dynamic
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (CRUCIAL OBSERVATION) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0002.16a1.0001    DYNAMIC     FastEthernet0/4
+1       0002.16a2.0002    DYNAMIC     FastEthernet0/4
+1       0002.16a3.0003    DYNAMIC     FastEthernet0/4
+1       0060.2f11.0001    DYNAMIC     FastEthernet0/1
+1       0060.2f22.0002    DYNAMIC     FastEthernet0/2
+1       0060.2f33.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 6
+
+[Key Analytical Discovery]:
+  Notice that Port FastEthernet0/4 on Switch-B has dynamically learned MULTIPLE
+  MAC addresses (Host-A1, Host-A2, and Host-A3)!
+  Because Hub-A multiplexes all traffic from LAN-A onto that single uplink cable,
+  every frame from LAN-A arrives at Switch-B via port Fa0/4.
+  This proves switches support multi-MAC port associations when connected to hubs.

@@ -1,0 +1,125 @@
+[1;36m================================================================================
+          MINI-PROJECT MULTI-PROTOCOL SERVER DAEMON (BOOTP, DHCP, TELNET)       
+================================================================================
+[0m Binding IP Address     : [1;32m0.0.0.0[0m (Allows multi-device connections)
+ BOOTP UDP Service Port : [33m7777[0m
+ DHCP UDP Service Port  : [33m7778[0m
+ TELNET TCP Service Port: [33m7779[0m
+ Active Error Scheme    : [1;35mCRC-32[0m
+--------------------------------------------------------------------------------
+[1;32m[Server Daemon Ready] Listening for incoming network traffic...
+[0m
+
+[1;34m[23:43:38] [BOOTP] Received datagram (316 bytes) from 127.0.0.1:36614[0m
+[36m  [BOOTP Request Details]:
+[0m[1mBOOTP REQUEST[0m
+  - Opcode       : 1 (BOOTREQUEST)
+  - Hardware     : Ethernet (MAC: 52:54:00:12:34:56)
+  - Trans. ID    : 0xABCD1234
+  - Client IP    : 0.0.0.0
+  - Assigned IP  : [32m0.0.0.0[0m
+  - Server IP    : 0.0.0.0
+  - Gateway IP   : 0.0.0.0
+  - Boot File    : [36mpxelinux.0[0m
+  - Server Name  : 
+[1;32m  [BOOTP Reply Dispatched] Assigned IP: 192.168.10.50, Boot file: pxelinux.0[0m
+
+[1;35m[23:43:38] [DHCP] Received datagram (316 bytes) from 127.0.0.1:33428[0m
+[35m  [DHCP Packet Received]:
+[0m[1mDHCPDISCOVER[0m
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : [32m0.0.0.0[0m
+  - Server ID    : 0.0.0.0
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Host Name    : client-node
+[1;32m  [DHCP Phase 2] Dispatched DHCPOFFER (192.168.10.100) to 52:54:00:12:34:56[0m
+
+[1;35m[23:43:38] [DHCP] Received datagram (318 bytes) from 127.0.0.1:33428[0m
+[35m  [DHCP Packet Received]:
+[0m[1mDHCPREQUEST[0m
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : [32m0.0.0.0[0m
+  - Server ID    : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Host Name    : client-node
+[1;32m  [DHCP Phase 4] Dispatched DHCPACK! Committed lease for 192.168.10.100[0m
+[1;36m+-------------------+-----------------+---------------------+------------+
+| MAC Address       | Assigned IP     | Hostname            | Status     |
++-------------------+-----------------+---------------------+------------+
+[0m| 52:54:00:12:34:56 | 192.168.10.100  | client-node         | [32mACTIVE    [0m |
+[1;36m+-------------------+-----------------+---------------------+------------+
+[0m
+[1;33m[23:43:38] [TELNET] Incoming TCP connection accepted from 127.0.0.1:41766[0m
+[33m  [TELNET CMD #100]: help[0m
+[1;31m  [TELNET FCS ERROR] Data frame #101 failed CRC-32 check! Discarding.
+[0m[33m  [TELNET CMD #101]: network_info[0m
+[33m  [TELNET CMD #102]: status[0m
+[33m  [TELNET CMD #103]: ping[0m
+[33m  [TELNET CMD #104]: calc 1024 * 768[0m
+[1;31m  [TELNET FCS ERROR] Data frame #105 failed CRC-32 check! Discarding.
+[0m[1;31m  [TELNET FCS ERROR] Data frame #105 failed CRC-32 check! Discarding.
+[0m[33m  [TELNET CMD #105]: calc 500 / 25[0m
+[33m  [TELNET CMD #106]: echo [JU-CSE-CN-LAB] Simulating Network, Transport and Application Protocols[0m
+[33m  [TELNET CMD #107]: echo [BOOTP] Bootstrap Protocol executed successfully over UDP port 6767[0m
+[33m  [TELNET CMD #108]: echo [DHCP] Dynamic Host Configuration Protocol DORA completed over UDP port 6769[0m
+[33m  [TELNET CMD #109]: echo [TELNET] Application layer NVT terminal session running over TCP port 2323[0m
+[36m  [TELNET DATA PKT #110] (85 bytes, FCS Validated)
+[0m[36m  [TELNET DATA PKT #111] (81 bytes, FCS Validated)
+[0m[36m  [TELNET DATA PKT #112] (70 bytes, FCS Validated)
+[0m[36m  [TELNET DATA PKT #113] (81 bytes, FCS Validated)
+[0m[36m  [TELNET DATA PKT #114] (80 bytes, FCS Validated)
+[0m[33m  [TELNET CMD #115]: stats[0m
+[33m  [TELNET CMD #116]: exit[0m
+[1;32m  [TELNET] File successfully received and written to server_received_payload.txt
+[0m[1;33m  [TELNET] Connection closed for 127.0.0.1
+[0m
+[1;35m[23:43:39] [DHCP] Received datagram (316 bytes) from 127.0.0.1:33428[0m
+[35m  [DHCP Packet Received]:
+[0m[1mDHCPRELEASE[0m
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCE
+  - Client IP    : 192.168.10.100
+  - Assigned/Off : [32m0.0.0.0[0m
+  - Server ID    : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+[33m  [DHCP] Released IP address for 52:54:00:12:34:56[0m
+
+[1;36m================================================================================
+        SERVER DAEMON SHUTDOWN REPORT
+================================================================================
+[0m[1m Execution Role          : [33mMulti-Protocol Server[0m
+ Total Elapsed Time      : 2189.15 ms
+ Total Data Transferred  : 5476 bytes
+--------------------------------------------------------------------------------
+[1;37m PROTOCOL BREAKDOWN:
+[0m  * BOOTP Packets        : 2
+  * DHCP DORA Packets    : 5
+  * TELNET Application   : 38
+--------------------------------------------------------------------------------
+[1;37m PACKET TRANSMISSION METRICS:
+[0m  * Total Transmissions  : 20 (includes retransmissions)
+  * Packets Received     : 25
+  * Retransmissions      : 0
+  * Channel Packets Lost : [31m0[0m
+  * Corrupted in Channel : [33m3[0m
+  * Delayed Packets      : [34m0[0m
+--------------------------------------------------------------------------------
+[1;37m ERROR DETECTION VERIFICATION:
+[0m  * Errors Injected      : 0
+  * Errors Detected (FCS): [32m3[0m
+  * Undetected (Blind)   : [32m0[0m
+--------------------------------------------------------------------------------
+[1;32m Throughput Efficiency : 100.00 %
+[0m Efficiency Bar Graph:
+ [[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m] 100.00 %
+ Packet Allocation:
+  - Unique Packets : [[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m] 100%
+  - Retransmitted  : [                                                  ] 0%
+[1;36m================================================================================
+
+[0m[1;32m[Server] All sockets cleanly closed. Goodbye!
+[0m

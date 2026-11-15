@@ -1,0 +1,50 @@
+\contentsline {section}{\numberline {1}Introduction and Theoretical Overview}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Wireshark Operational Architecture}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Wireshark Three-Panel Graphical Architecture}{4}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Name Resolution Mechanisms}{4}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Experimental Setup and Test Run Methodology}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Capture Configuration and Execution Workflow}{5}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Detailed Question-by-Question Solutions and Analysis}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Question 1: ICMP Ping Traffic and Initial Address Resolution (ARP / ICMPv6 ND)}{5}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Objective and Problem Statement}{5}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Theoretical Mechanism: ARP and ICMP Sequencing}{5}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Procedure and Observations}{6}{subsubsection.3.1.3}%
+\contentsline {subsection}{\numberline {3.2}Question 2: Web Traffic Inspection (Protocols, Latency, Addresses, Host)}{7}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Objective and Problem Statement}{7}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Procedure and Experimental Steps}{8}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}2(a) Unfiltered Protocol Listing}{8}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4}2(b) HTTP Transaction Latency (GET to 200 OK)}{9}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}2(c) Internet Addresses (Client Host vs. Web Server)}{10}{subsubsection.3.2.5}%
+\contentsline {subsubsection}{\numberline {3.2.6}2(d) and 2(e) HTTP GET Dissection and Host Header Extraction}{11}{subsubsection.3.2.6}%
+\contentsline {subsection}{\numberline {3.3}Question 3: Hex and ASCII Representations in the Packet Bytes Panel}{12}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Objective and Problem Statement}{12}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Analysis of Packet Bytes Panel Architecture}{12}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}Question 4: First 4 Bytes of Hex for the Host Parameter}{12}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Objective and Problem Statement}{12}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Byte-Level Decoding and Character Mapping}{13}{subsubsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.5}Question 5: Display Filtering and Following Network Conversations}{13}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Objective and Problem Statement}{13}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}Display Filter Syntax and Usage}{14}{subsubsection.3.5.2}%
+\contentsline {subsubsection}{\numberline {3.5.3}5(a) Following the TCP Stream (Network Conversation Reassembly)}{14}{subsubsection.3.5.3}%
+\contentsline {subsection}{\numberline {3.6}Question 6: Server HTTP Response and Ethernet Layer Dissection}{15}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}Objective and Problem Statement}{15}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}Packet Identification and Dissection}{15}{subsubsection.3.6.2}%
+\contentsline {subsubsection}{\numberline {3.6.3}Fundamental Networking Principle: Hop-by-Hop vs. End-to-End Addressing}{15}{subsubsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.7}Question 7: NIC Manufacturers (Vendor Resolution)}{16}{subsection.3.7}%
+\contentsline {subsubsection}{\numberline {3.7.1}Objective and Problem Statement}{16}{subsubsection.3.7.1}%
+\contentsline {subsubsection}{\numberline {3.7.2}MAC Address Name Resolution Analysis}{16}{subsubsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.8}Question 8: Hexadecimal OUIs in Raw Packet Bytes}{17}{subsection.3.8}%
+\contentsline {subsubsection}{\numberline {3.8.1}Objective and Problem Statement}{17}{subsubsection.3.8.1}%
+\contentsline {subsubsection}{\numberline {3.8.2}Structure of IEEE 802 MAC Addresses and OUIs}{17}{subsubsection.3.8.2}%
+\contentsline {subsubsection}{\numberline {3.8.3}Extraction from the Packet Bytes Panel}{18}{subsubsection.3.8.3}%
+\contentsline {subsection}{\numberline {3.9}Question 9: Protocol Hierarchy Statistics (TCP vs. UDP)}{18}{subsection.3.9}%
+\contentsline {subsubsection}{\numberline {3.9.1}Objective and Problem Statement}{18}{subsubsection.3.9.1}%
+\contentsline {subsubsection}{\numberline {3.9.2}Protocol Hierarchy Inspection Procedure}{19}{subsubsection.3.9.2}%
+\contentsline {subsubsection}{\numberline {3.9.3}9(a) TCP Statistical Share and Higher-Level Protocols}{19}{subsubsection.3.9.3}%
+\contentsline {subsubsection}{\numberline {3.9.4}9(b) UDP Statistical Share and Higher-Level Protocols}{20}{subsubsection.3.9.4}%
+\contentsline {subsection}{\numberline {3.10}Question 10: Traffic Flow Graph Analysis}{20}{subsection.3.10}%
+\contentsline {subsubsection}{\numberline {3.10.1}Objective and Problem Statement}{20}{subsubsection.3.10.1}%
+\contentsline {subsubsection}{\numberline {3.10.2}Flow Graph Configuration and Interpretation}{20}{subsubsection.3.10.2}%
+\contentsline {subsubsection}{\numberline {3.10.3}End-to-End Session Walkthrough}{21}{subsubsection.3.10.3}%
+\contentsline {section}{\numberline {4}Systematic Wireshark Methodology and Best Practices}{22}{section.4}%
+\contentsline {section}{\numberline {5}Conclusion}{22}{section.5}%

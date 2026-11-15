@@ -1,0 +1,94 @@
+================================================================================
+CISCO PACKET TRACER EXPERIMENT GUIDE: PROBLEM 2
+Creation of LAN-A (3 Hosts using a Central Hub) & All-Pairs Ping Analysis
+================================================================================
+
+1. OBJECTIVE:
+   Construct a local area network named "LAN-A" comprising three end hosts connected
+   via a central multiport Layer-1 Hub. Verify full pairwise Layer-3 reachability
+   and examine the collision and broadcast behavior of repeated Layer-1 frames.
+
+2. NETWORK TOPOLOGY & HARDWARE SPECIFICATIONS:
+   - Central Device: Hub-PT (Generic 6-port or 4-port Ethernet Hub) named "Hub-A"
+     * Ports: FastEthernet0, FastEthernet1, FastEthernet2
+
+   - Host A1: PC-PT named "Host-A1" (or PC-A1)
+     * Connected to: Hub-A Port FastEthernet0
+     * Cable: Copper Straight-Through
+     * IPv4 Address: 192.168.10.1
+     * Subnet Mask: 255.255.255.0 (/24)
+     * MAC Address: 0002.16A1.0001
+
+   - Host A2: PC-PT named "Host-A2" (or PC-A2)
+     * Connected to: Hub-A Port FastEthernet1
+     * Cable: Copper Straight-Through
+     * IPv4 Address: 192.168.10.2
+     * Subnet Mask: 255.255.255.0 (/24)
+     * MAC Address: 0002.16A2.0002
+
+   - Host A3: PC-PT named "Host-A3" (or PC-A3)
+     * Connected to: Hub-A Port FastEthernet2
+     * Cable: Copper Straight-Through
+     * IPv4 Address: 192.168.10.3
+     * Subnet Mask: 255.255.255.0 (/24)
+     * MAC Address: 0002.16A3.0003
+
+3. STEP-BY-STEP CISCO PACKET TRACER PROCEDURES:
+   Step 3.1: From "Network Devices" -> "Hubs", drag a "Hub-PT" to workspace; label as "Hub-A".
+   Step 3.2: Drag three "PC-PT" hosts, label them "Host-A1", "Host-A2", and "Host-A3".
+   Step 3.3: Use "Copper Straight-Through" cables:
+             - Host-A1 FastEthernet0 ---> Hub-A FastEthernet0
+             - Host-A2 FastEthernet0 ---> Hub-A FastEthernet1
+             - Host-A3 FastEthernet0 ---> Hub-A FastEthernet2
+   Step 3.4: Assign static IP addresses (Subnet 192.168.10.0/24):
+             - Host-A1: IP 192.168.10.1, Subnet Mask 255.255.255.0
+             - Host-A2: IP 192.168.10.2, Subnet Mask 255.255.255.0
+             - Host-A3: IP 192.168.10.3, Subnet Mask 255.255.255.0
+
+4. EXECUTION & CLI COMMANDS:
+   Pairwise Pings:
+   ----------------------------------------------------------------------------
+   [Pair 1: Host-A1 -> Host-A2]
+   From Host-A1 Command Prompt:
+   > ping 192.168.10.2
+   Pinging 192.168.10.2 with 32 bytes of data:
+   Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.2: bytes=32 time<1ms TTL=128
+   Ping statistics: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+
+   [Pair 2: Host-A2 -> Host-A3]
+   From Host-A2 Command Prompt:
+   > ping 192.168.10.3
+   Pinging 192.168.10.3 with 32 bytes of data:
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Ping statistics: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+
+   [Pair 3: Host-A1 -> Host-A3]
+   From Host-A1 Command Prompt:
+   > ping 192.168.10.3
+   Pinging 192.168.10.3 with 32 bytes of data:
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Reply from 192.168.10.3: bytes=32 time<1ms TTL=128
+   Ping statistics: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+
+5. PACKET TRACER SIMULATION MODE OBSERVATIONS:
+   - When Host-A1 transmits an ICMP packet destined for Host-A2:
+     * The physical bits reach Hub-A on FastEthernet0.
+     * Hub-A has NO MAC forwarding table, NO processor, and NO buffer.
+     * Hub-A regenerates and repeats the incoming bitstream out of ALL OTHER PORTS
+       (FastEthernet1 and FastEthernet2).
+     * Host-A2 receives the frame, matches its MAC address, and processes the packet.
+     * Host-A3 ALSO receives the frame at its physical NIC! In Simulation Mode,
+       a red 'X' appears over Host-A3 because Host-A3's Data Link Layer checks
+       the destination MAC, finds it is not intended for it, and silently discards it.
+   - Collision Domain: All 3 hosts belong to a single collision domain.
+   - Broadcast Domain: All 3 hosts belong to a single broadcast domain.
+================================================================================
+

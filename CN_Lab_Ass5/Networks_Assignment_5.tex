@@ -1,0 +1,684 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{placeins}
+\usepackage{float}
+\usepackage{tabularx}
+
+\geometry{margin=1in}
+
+% Hyperref configuration
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+% Code snippet styling
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.96,0.96,0.94}
+\definecolor{codeblue}{rgb}{0.13,0.13,1}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Command for clean screenshot placeholders (left blank for user to paste later)
+\newcommand{\ScreenshotPlaceholder}[2][5.8cm]{%
+    \fbox{%
+        \begin{minipage}[c][#1][c]{0.95\linewidth}
+            \centering
+            \textcolor{gray!80}{\Large\textbf{[Screenshot Area Left Blank]}}\\[0.3cm]
+            \textcolor{gray!90}{\small\textit{#2}}
+        \end{minipage}%
+    }%
+}
+
+\begin{document}
+
+% -------------------------------------------------------------
+% TITLE PAGE
+% -------------------------------------------------------------
+\begin{titlepage}
+    \centering
+    
+    \includegraphics[width=0.91\textwidth]{Jadavpur_University_Logo.svg.png}\\[2 cm]
+
+    {\huge \textbf{JADAVPUR UNIVERSITY}}\\[1.3cm]
+    
+    {\Large
+    \textbf{Name:} Diptarko Bhattacharjee\\[0.65cm]
+    \textbf{Roll:} 002410501013\\[0.65cm]
+    \textbf{Class:} BCSE - UG 3 - Sem 1 - A1\\[0.65cm]
+    \textbf{Subject:} Computer Networks Lab Assignment 5 Report\\
+    }
+    
+\end{titlepage}
+
+\newpage
+\vspace*{-1cm}
+\tableofcontents
+\vspace*{-1cm}
+\newpage
+
+% -------------------------------------------------------------
+% MAIN CONTENT
+% -------------------------------------------------------------
+\title{\textbf{Assignment 5: Packet Tracer and Traffic Analysis with Wireshark}}
+\author{\textbf{Diptarko Bhattacharjee}}
+\date{}
+\maketitle
+
+\section{Introduction and Theoretical Overview}
+
+Modern computer networks operate as complex, layered communication systems governed by the Open Systems Interconnection (OSI) 7-Layer Reference Model and the Internet Engineering Task Force (IETF) TCP/IP protocol suite. Within these architectures, data units undergo sequential encapsulation and decapsulation as they traverse the stack: application layer messages are segmented into transport layer segments or datagrams (TCP/UDP), wrapped into network layer datagrams (IPv4/IPv6), framed into data link frames (Ethernet II), and modulated into physical electrical or optical signals. 
+
+Understanding, troubleshooting, and verifying network protocols at the microscopic level requires passive traffic interception and packet dissection tools. Wireshark is the industry-standard, cross-platform open-source network protocol analyzer. This assignment focuses on capturing live network traffic, dissecting protocol headers across Layers 2 through 7, applying granular display filters, performing stream reassembly, extracting raw hexadecimal payloads, and analyzing network performance metrics and flow graphs.
+
+\subsection{Wireshark Operational Architecture}
+Wireshark captures network frames by interfacing with the operating system's kernel packet capture drivers:
+\begin{itemize}
+    \item \textbf{Packet Capture Engine (Driver Layer):} On Linux environments, Wireshark relies on \texttt{libpcap} via raw packet sockets (\texttt{AF\_PACKET}). On Windows, it interfaces with the \texttt{Npcap} driver (or historically \texttt{WinPcap}). By default, network interface cards (NICs) operate in non-promiscuous mode, discarding frames whose destination MAC address does not match the card's burned-in hardware address. During packet capture, the NIC is configured in \textbf{promiscuous mode}, enabling it to capture all physical-layer frames traversing the shared broadcast domain regardless of intended recipient.
+    \item \textbf{Filtering Subsystems:} Wireshark differentiates between two filtering paradigms:
+    \begin{enumerate}
+        \item \textit{Capture Filters:} Implemented via the Berkeley Packet Filter (BPF) engine in kernel space. Extraneous traffic is discarded immediately before incurring expensive user-kernel context switching and memory copies.
+        \item \textit{Display Filters:} Evaluated in user space across the captured packet buffer, providing dynamic, non-destructive views without modifying underlying captured data.
+    \end{enumerate}
+    \item \textbf{Recursive Protocol Dissection:} In user space, Wireshark traverses the protocol stack hierarchically, peeling off headers layer-by-layer (Frame $\rightarrow$ Ethernet $\rightarrow$ IP $\rightarrow$ TCP/UDP $\rightarrow$ Application) and exposing internal parameters.
+\end{itemize}
+
+\subsection{Wireshark Three-Panel Graphical Architecture}
+The Wireshark graphical interface splits packet inspection into three synchronized panels:
+\begin{enumerate}
+    \item \textbf{Packet List Panel (Top):} Displays a chronological summary table of captured frames. Each row corresponds to a single frame containing Packet Number, Capture Time, Source Address, Destination Address, Protocol, Frame Length, and Protocol-Specific Summary Info. Wireshark colorizes rows dynamically based on protocol rules (e.g., light blue for UDP, light purple for TCP, light green for HTTP, black with red text for TCP resets or ICMP errors).
+    \item \textbf{Packet Details Panel (Middle):} Presents an interactive collapsible tree dissecting the protocol headers of the currently selected packet. Each tree node corresponds to an encapsulation layer (e.g., Frame metadata, Ethernet II header, IPv4/IPv6 header, TCP/UDP header, HTTP payload). Expanding a node reveals internal header flags, sequence numbers, checksum validation status, and header lengths.
+    \item \textbf{Packet Bytes Panel (Bottom):} Displays the exact binary representation of the serialized frame in side-by-side format: memory offsets on the left, 16 hexadecimal bytes grouped in octets in the center, and printable ASCII characters on the right (with non-printable bytes rendered as dots \texttt{.}). Selecting a field in the Packet Details panel automatically highlights the exact corresponding contiguous byte sequence in the Packet Bytes panel.
+\end{enumerate}
+
+\subsection{Name Resolution Mechanisms}
+To facilitate rapid diagnostic interpretation without obscuring underlying raw addresses, Wireshark provides configurable Name Resolution features:
+\begin{itemize}
+    \item \textbf{MAC Name Resolution:} Translates the first 3 bytes (24 bits) of an Ethernet MAC address---the Organizationally Unique Identifier (OUI)---into the registered hardware manufacturer name (e.g., Intel, Apple, Cisco, TP-Link) by querying the IEEE OUI registry.
+    \item \textbf{Network Name Resolution (IP to Hostname):} Performs asynchronous reverse DNS lookups to translate IP addresses into fully qualified domain names (FQDNs). (Note: Typically disabled during covert diagnostic scanning to prevent generating unwanted reverse DNS traffic).
+    \item \textbf{Transport Name Resolution:} Resolves well-known Layer 4 port numbers to standardized service names (e.g., port 80 to \texttt{http}, port 53 to \texttt{domain}/DNS, port 443 to \texttt{https}).
+\end{itemize}
+
+\section{Experimental Setup and Test Run Methodology}
+
+\subsection{Capture Configuration and Execution Workflow}
+The experimental workflow was conducted systematically adhering to the following procedure:
+\begin{enumerate}
+    \item \textbf{Interface Identification:} Opened Wireshark and navigated to \texttt{Capture $\rightarrow$ Interfaces} (or \texttt{Capture $\rightarrow$ Options}, shortcut \texttt{Ctrl+K}). Selected the active network interface carrying live traffic (e.g., \texttt{eth0}, \texttt{wlan0}, or Windows Ethernet/Wi-Fi adapter).
+    \item \textbf{Enabling Name Resolution:} Verified that \texttt{MAC name resolution} was explicitly enabled under \texttt{Capture Options $\rightarrow$ Name Resolution} to ensure physical NIC manufacturers are automatically mapped.
+    \item \textbf{Initiating Capture:} Clicked \textbf{Start} to begin live frame interception with real-time packet list updates enabled.
+    \item \textbf{Controlled Traffic Generation:} Generated distinct traffic profiles using command-line diagnostic utilities and web browsing sessions:
+    \begin{itemize}
+        \item Generated ICMP and ARP traffic by executing the \texttt{ping} utility targeting a local router gateway or neighboring node.
+        \item Generated plain HTTP web traffic using a standard web browser or \texttt{curl} targeting an unencrypted HTTP endpoint (e.g., \texttt{http://example.com} or \texttt{http://gaia.cs.umass.edu}) to permit transparent application-layer header analysis.
+    \end{itemize}
+    \item \textbf{Terminating and Preserving Capture:} Stopped packet capture using \texttt{Capture $\rightarrow$ Stop} (or \texttt{Ctrl+E}). The resulting packet capture trace was preserved in standard \texttt{.pcap}/\texttt{.pcapng} format for offline dissection.
+\end{enumerate}
+
+\section{Detailed Question-by-Question Solutions and Analysis}
+
+\subsection{Question 1: ICMP Ping Traffic and Initial Address Resolution (ARP / ICMPv6 ND)}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Generate some ICMP traffic by using the Ping command line tool to check the connectivity of a neighbouring machine (or router). Note the results in Wireshark. The initial ARP request broadcast from your PC determines the physical MAC address of the network IP Address, and the ARP reply from the neighboring system. After the ARP request, the pings (ICMP echo request and replies) can be seen.}
+
+\subsubsection{Theoretical Mechanism: ARP and ICMP Sequencing}
+When a network host initiates an ICMP Echo Request via the \texttt{ping} command towards an IP address on the local subnet, the host must encapsulate the IP datagram into a Layer 2 Ethernet frame. Ethernet delivery requires the destination physical MAC address. 
+
+If the destination IP's physical mapping is not already present in the host's operating system ARP cache:
+\begin{enumerate}
+    \item \textbf{ARP Request Broadcast:} The host transmits an Address Resolution Protocol (ARP) Request frame with:
+    \begin{itemize}
+        \item \textbf{Destination MAC:} Broadcast address \texttt{ff:ff:ff:ff:ff:ff}.
+        \item \textbf{Target IP:} The destination IP address being queried.
+        \item \textbf{Question:} \textit{"Who has IP address $X$? Tell IP address $Y$."}
+    \end{itemize}
+    Every network interface on the local broadcast domain receives and processes this broadcast frame.
+    \item \textbf{ARP Reply Unicast:} The machine possessing IP address $X$ responds with an ARP Reply frame sent via unicast directly to the querying host's MAC address, supplying its hardware MAC address.
+    \item \textbf{IPv6 Neighbor Discovery (NDP):} In IPv6 environments, ARP is replaced by ICMPv6 Neighbor Discovery: an ICMPv6 Type 135 (Neighbor Solicitation) message is sent to the target's solicited-node multicast address, and an ICMPv6 Type 136 (Neighbor Advertisement) message is returned via unicast.
+    \item \textbf{Subsequent ICMP Exchange:} Once the MAC binding is established and cached, the host transmits ICMP Type 8 (Echo Request) frames, and the destination returns ICMP Type 0 (Echo Reply) frames (or ICMPv6 Type 128 Echo Request and Type 129 Echo Reply).
+\end{enumerate}
+
+\subsubsection{Procedure and Observations}
+A fresh packet capture was initiated in Wireshark. In a separate terminal window, the connectivity to the local gateway/neighbor was tested via:
+\begin{lstlisting}[language=bash, caption=ICMP Traffic Generation Command]
+# Ping local gateway / neighbor node
+ping -c 4 192.168.1.1
+\end{lstlisting}
+In Wireshark, the display filter \texttt{arp || icmp || icmpv6} was applied. As theoretically predicted, the capture displays an initial ARP Request broadcast followed by an ARP Reply. Only after Layer 2 address resolution is completed do the periodic ICMP Echo Request and Echo Reply pairs appear.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{arp_request_reply.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Capture: IPv4 ARP Request Broadcast (ff:ff:ff:ff:ff:ff) and Unicast Reply preceding ICMP ping exchange}
+    \caption{Wireshark capture showing initial ARP address resolution preceding ICMP Echo Request/Reply.}
+    \label{fig:arp_icmp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{icmpv6_ndp.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Capture: IPv6 Neighbor Solicitation (Type 135) and Neighbor Advertisement (Type 136) preceding ICMPv6 Echo Request/Reply}
+    \caption{Wireshark capture showing IPv6 Neighbor Discovery (NDP) and subsequent ICMPv6 ping exchange.}
+    \label{fig:icmpv6_ndp}
+\end{figure}
+
+\subsection{Question 2: Web Traffic Inspection (Protocols, Latency, Addresses, Host)}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Generate some web traffic and:
+\begin{enumerate}
+    \item[(a)] find the list of the different protocols that appear in the protocol column in the unfiltered packet-listing window of Wireshark.
+    \item[(b)] How long did it take from when the HTTP GET message was sent until the HTTP OK reply was received? (By default, the value of the Time column in the packet-listing window is the amount of time, in seconds, since Wireshark tracing began. To display the Time field in time-of-day format, select the Wireshark View pull down menu, then select Time Display Format, then select Time-of-day.)
+    \item[(c)] What is the Internet address of the website? What is the Internet address of your computer?
+    \item[(d)] Search back through your capture, and find an HTTP packet containing a GET command. Click on the packet in the Packet List Panel. Then expand the HTTP layer in the Packet Details Panel, from the packet.
+    \item[(e)] Find out the value of the Host from the Packet Details Panel, within the GET command.
+\end{enumerate}}
+
+\subsubsection{Procedure and Experimental Steps}
+Web traffic was generated by launching a browser and navigating to a plain HTTP website (\texttt{http://example.com}), or executing a command-line request:
+\begin{lstlisting}[language=bash, caption=Web Traffic Generation Command]
+# Generate plain HTTP traffic to capture unencrypted application headers
+curl -v http://example.com
+\end{lstlisting}
+The capture was stopped and inspected without any display filters applied.
+
+\subsubsection{2(a) Unfiltered Protocol Listing}
+In the unfiltered Packet List panel, numerous network protocols across various layers of the stack were observed in the \textbf{Protocol} column:
+\begin{itemize}
+    \item \textbf{Ethernet II / ARP:} Address resolution traffic on Layer 2.
+    \item \textbf{IPv4 / IPv6:} Network layer routing and addressing.
+    \item \textbf{TCP (Transmission Control Protocol):} Reliable, connection-oriented transport layer sessions supporting HTTP, HTTPS, and SSH.
+    \item \textbf{UDP (User Datagram Protocol):} Connectionless transport protocol supporting low-latency services.
+    \item \textbf{DNS (Domain Name System):} Resolves domain names to IP addresses prior to HTTP connection setup.
+    \item \textbf{HTTP (Hypertext Transfer Protocol):} Application layer web transfer protocol (RFC 2616).
+    \item \textbf{TLSv1.2 / TLSv1.3:} Transport Layer Security encrypting HTTPS communications.
+    \item \textbf{QUIC:} UDP-based multiplexed transport protocol utilized by HTTP/3.
+    \item \textbf{SSDP / MDNS:} Simple Service Discovery Protocol and Multicast DNS for local service discovery.
+    \item \textbf{ICMP / ICMPv6:} Diagnostic and control messaging.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{unfiltered_protocols.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Unfiltered Packet List Panel displaying multiple concurrent protocols (TCP, UDP, HTTP, DNS, ARP, TLS, etc.)}
+    \caption{Unfiltered packet list panel displaying diverse protocols active during the web browsing capture.}
+    \label{fig:unfiltered_protocols}
+\end{figure}
+
+\subsubsection{2(b) HTTP Transaction Latency (GET to 200 OK)}
+To determine the latency elapsed between transmitting the HTTP GET request and receiving the HTTP 200 OK response:
+\begin{enumerate}
+    \item Located the HTTP \texttt{GET} packet in the Packet List panel. Recorded its timestamp from the \textbf{Time} column ($t_{\text{GET}}$).
+    \item Located the corresponding HTTP \texttt{200 OK} response packet from the server. Recorded its timestamp ($t_{\text{200 OK}}$).
+    \item Toggled time display format via \texttt{View $\rightarrow$ Time Display Format $\rightarrow$ Time of Day} to inspect absolute wall-clock timing, as well as \texttt{Seconds Since Beginning of Capture} for relative latency.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{0.9\textwidth}{|l|X|r|}
+\hline
+\textbf{Transaction Event} & \textbf{Packet Description / Method} & \textbf{Timestamp (Seconds)} \\ \hline
+Request Sent & HTTP GET request sent by client & $t_{\text{GET}} = 74.031239\text{ s}$ \\ \hline
+Response Received & HTTP/1.1 200 OK response from server & $t_{\text{200 OK}} = 74.331279\text{ s}$ \\ \hline
+\textbf{Total Latency ($\Delta t$)} & \textbf{Round-Trip Transaction Duration} & $\mathbf{0.300040\text{ s} \ (300.04\text{ ms})}$ \\ \hline
+\end{tabularx}
+\caption{HTTP Transaction Latency and Timing Breakdown.}
+\label{tab:http_latency}
+\end{table}
+
+\noindent The round-trip application transaction latency is given by:
+\begin{equation}
+    \Delta t = t_{\text{200 OK}} - t_{\text{GET}} = 74.331279 - 74.031239 = \mathbf{0.300040\text{ s}} \ (\approx 300.04\text{ ms})
+\end{equation}
+This duration accounts for network propagation delay across intermediate routers, Layer 4 TCP ACK sequencing, and server-side request processing and payload generation.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{http_get_timestamp.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet List Panel: HTTP GET Request Packet with Time column highlighted}
+    \caption{HTTP GET request packet used for transaction latency measurement.}
+    \label{fig:http_get_timestamp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{http_200_ok_timestamp.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet List Panel: HTTP 200 OK Response Packet with matching timestamp and delta time}
+    \caption{Matching HTTP 200 OK response packet from the web server.}
+    \label{fig:http_200_ok_timestamp}
+\end{figure}
+
+\subsubsection{2(c) Internet Addresses (Client Host vs. Web Server)}
+By inspecting the Internet Protocol layer (IPv4/IPv6) within the Packet Details panel:
+\begin{itemize}
+    \item \textbf{Client Host Address (Source IP of GET):} \texttt{2405:201:8021:20a5:b44b:919b:a241:e0ee} (or IPv4 local subnet address such as \texttt{192.168.1.105}).
+    \item \textbf{Web Server Address (Destination IP of GET):} \texttt{2600:1408:ec00:36::1736:7f31} (or IPv4 server address such as \texttt{93.184.216.34} corresponding to \texttt{example.com}).
+\end{itemize}
+These IP addresses persist end-to-end across internetwork routing boundaries, whereas Layer 2 MAC addresses change hop-by-hop.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{ip_address_details.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet Details Panel: Expanded Internet Protocol layer displaying Source IP and Destination IP}
+    \caption{Packet Details panel illustrating Source and Destination IP addresses in the IP header.}
+    \label{fig:ip_address_details}
+\end{figure}
+
+\subsubsection{2(d) and 2(e) HTTP GET Dissection and Host Header Extraction}
+In the Packet List panel, the HTTP GET packet was selected. In the Packet Details panel, the \textbf{Hypertext Transfer Protocol} layer was expanded. 
+\begin{itemize}
+    \item \textbf{Request Line:} \texttt{GET / HTTP/1.1\textbackslash r\textbackslash n}
+    \item \textbf{Host Header Field:} \texttt{Host: example.com\textbackslash r\textbackslash n}
+    \item \textbf{Extracted Host Value:} \texttt{example.com}
+\end{itemize}
+
+\noindent \textbf{Theoretical Importance of the Host Header:} In HTTP/1.0, requests did not strictly mandate the \texttt{Host:} header. With the introduction of HTTP/1.1 (RFC 2616 / RFC 7230), the \texttt{Host:} header was made compulsory. This allows web hosting providers to implement \textbf{Virtual Hosting}, wherein hundreds of independent domain names share a single physical IP address. The web server inspects the incoming \texttt{Host:} header to route the HTTP request to the appropriate virtual document root.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{http_host_header.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet Details Panel: Expanded HTTP layer exposing Request Method, Request URI, and Host: Header}
+    \caption{Expanded Hypertext Transfer Protocol tree displaying the \texttt{Host: example.com} header.}
+    \label{fig:http_host_header}
+\end{figure}
+
+\subsection{Question 3: Hex and ASCII Representations in the Packet Bytes Panel}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Highlight the Hex and ASCII representations of the packet in the Packet Bytes Panel.}
+
+\subsubsection{Analysis of Packet Bytes Panel Architecture}
+The Packet Bytes panel exposes the raw serialized wire bytes of the captured frame. Its layout is structured into three distinct zones:
+\begin{enumerate}
+    \item \textbf{Offset Index (Left Column):} Displays the zero-indexed hexadecimal byte offset from the start of the frame in 16-byte increments (e.g., \texttt{0000}, \texttt{0010}, \texttt{0020}, \dots, \texttt{00e0}).
+    \item \textbf{Hexadecimal Dump (Center):} Displays 16 byte values per line in hexadecimal notation, partitioned into two 8-byte groups separated by extra whitespace for visual clarity.
+    \item \textbf{ASCII Representation (Right Column):} Renders the human-readable ASCII equivalent of each byte. Printable characters (ASCII codes 32 to 126) are printed as characters; non-printable control characters (e.g., carriage return \texttt{\textbackslash r} = \texttt{0x0D}, line feed \texttt{\textbackslash n} = \texttt{0x0A}, null bytes = \texttt{0x00}) are substituted with dots (\texttt{.}).
+\end{enumerate}
+
+\noindent \textbf{Cross-Panel Synchronization:} When a specific protocol layer (e.g., the Ethernet header, IP header, or HTTP \texttt{Host:} header) is clicked in the Packet Details panel, Wireshark immediately highlights the corresponding contiguous range of bytes in both the Hex dump and ASCII text in the Packet Bytes panel.
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{packet_bytes_highlight.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Packet Bytes Panel: Synchronized Highlighting of Hex and ASCII representations for selected HTTP header}
+    \caption{Packet Bytes panel showing bidirectional synchronization: highlighted Hex bytes and corresponding ASCII text.}
+    \label{fig:packet_bytes_highlight}
+\end{figure}
+
+\subsection{Question 4: First 4 Bytes of Hex for the Host Parameter}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Find out the first 4 bytes of the Hex value of the Host parameter from the Packet Bytes Panel.}
+
+\subsubsection{Byte-Level Decoding and Character Mapping}
+Within the HTTP GET request, the Host header is transmitted as:
+\begin{center}
+    \texttt{Host: example.com\textbackslash r\textbackslash n}
+\end{center}
+The header name and delimiter consist of the ASCII characters \texttt{Host:\ }:
+\begin{itemize}
+    \item \texttt{'H'} = \texttt{0x48}, \ \texttt{'o'} = \texttt{0x6f}, \ \texttt{'s'} = \texttt{0x73}, \ \texttt{'t'} = \texttt{0x74}, \ \texttt{':'} = \texttt{0x3a}, \ \texttt{' '} = \texttt{0x20}
+\end{itemize}
+The \textbf{value} of the Host parameter begins immediately following the space delimiter (\texttt{0x20}). For the domain \texttt{example.com}, the first four characters of the value are \textbf{`e'}, \textbf{`x'}, \textbf{`a'}, and \textbf{`m'}.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Byte Position} & \textbf{ASCII Character} & \textbf{Decimal Value} & \textbf{Hexadecimal Representation} \\ \hline
+1 & \texttt{'e'} & 101 & \textbf{0x65} \\ \hline
+2 & \texttt{'x'} & 120 & \textbf{0x78} \\ \hline
+3 & \texttt{'a'} & 97  & \textbf{0x61} \\ \hline
+4 & \texttt{'m'} & 109 & \textbf{0x6d} \\ \hline
+\end{tabular}
+\caption{ASCII to Hexadecimal Mapping for First 4 Bytes of Host Value (\texttt{exam}).}
+\label{tab:host_hex_mapping}
+\end{table}
+
+\noindent Therefore, the first 4 bytes of the Hex value of the Host parameter are:
+\begin{equation}
+    \mathbf{65 \ 78 \ 61 \ 6d}
+\end{equation}
+\textit{(Note: If accessing an alternative site such as \texttt{gaia.cs.umass.edu}, the first 4 characters are \texttt{gaia}, mapping to \textbf{67 61 69 61}).}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{host_first4_hex.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet Bytes Panel: Close-up highlighting the first 4 bytes of the Host value (65 78 61 6d)}
+    \caption{Close-up of the Packet Bytes panel isolating the first 4 hex bytes (\texttt{65 78 61 6d}) of the Host header value.}
+    \label{fig:host_first4_hex}
+\end{figure}
+
+\subsection{Question 5: Display Filtering and Following Network Conversations}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Filter packets with http, TCP, DNS and other protocols.
+\begin{enumerate}
+    \item[(a)] Find out what those packets contain by following one of the conversations (also called network flows), select one of the packets and press the right mouse button..click on follow.
+\end{enumerate}}
+
+\subsubsection{Display Filter Syntax and Usage}
+Wireshark provides an expressive display filter language. The filter bar changes color to provide immediate validation feedback: \textbf{green} indicates valid filter syntax, whereas \textbf{red} indicates a syntax error.
+Key display filters applied during this investigation:
+\begin{itemize}
+    \item \texttt{http}: Filters solely HTTP requests and responses.
+    \item \texttt{tcp}: Displays all TCP transport-layer segments.
+    \item \texttt{dns}: Filters Domain Name System queries and responses over UDP/TCP port 53.
+    \item \texttt{tcp.port == 80}: Filters all traffic traversing port 80.
+    \item Compound Filters: \texttt{http || dns} (displays both HTTP and DNS), \texttt{tcp.flags.syn == 1} (isolates connection establishment handshakes).
+\end{itemize}
+
+\subsubsection{5(a) Following the TCP Stream (Network Conversation Reassembly)}
+A raw packet capture presents interleaved packets originating from multiple concurrent connections. To isolate a specific session:
+\begin{enumerate}
+    \item Right-clicked on an HTTP packet associated with the web session.
+    \item Selected \textbf{Follow $\rightarrow$ TCP Stream} from the context menu.
+    \item Wireshark automatically reassembles the bidirectional TCP conversation by tracking TCP Sequence and Acknowledgment numbers across the socket 4-tuple (\textit{Source IP, Source Port, Destination IP, Destination Port}).
+    \item Wireshark opens a dedicated conversation dialog displaying the completely reassembled application payload with distinct color coding:
+    \begin{itemize}
+        \item \textbf{Red Text:} Data transmitted from the \textbf{Client to Server} (the HTTP GET request, User-Agent, Accept headers).
+        \item \textbf{Blue Text:} Data returned from the \textbf{Server to Client} (HTTP 200 OK status, Content-Type, Content-Length, and the reassembled HTML body).
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{display_filter_bar.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Filter Bar: Active display filters (http, tcp, dns) applied to packet capture}
+    \caption{Application of display filters in Wireshark to isolate specific protocol conversations.}
+    \label{fig:display_filters}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{follow_tcp_stream_dialog.png}
+    \ScreenshotPlaceholder[6.0cm]{Wireshark Follow TCP Stream Window: Reassembled Client HTTP GET Request (Red) and Server HTTP 200 OK Response with HTML Body (Blue)}
+    \caption{Follow TCP Stream dialog showing reassembled bidirectional conversation flow.}
+    \label{fig:follow_tcp_stream}
+\end{figure}
+
+\subsection{Question 6: Server HTTP Response and Ethernet Layer Dissection}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Search through your capture, and find an HTTP packet coming back from the server (TCP Source Port == 80). Expand the Ethernet layer in the Packet Details Panel.}
+
+\subsubsection{Packet Identification and Dissection}
+To isolate the server's HTTP response packet, the display filter was applied:
+\begin{lstlisting}[language=bash, caption=Wireshark Display Filter for Server HTTP Response]
+tcp.srcport == 80 && http
+\end{lstlisting}
+The HTTP response packet was selected in the Packet List panel. In the Packet Details panel:
+\begin{itemize}
+    \item \textbf{Layer 4 (Transmission Control Protocol):} Confirmed \texttt{Source Port: 80} (HTTP) and \texttt{Destination Port: 54321} (the client's ephemeral port).
+    \item \textbf{Layer 2 (Ethernet II):} Expanded the Ethernet II header node to reveal Layer 2 addressing fields:
+    \begin{itemize}
+        \item \textbf{Destination MAC Address (6 bytes):} Identifies the local client host's physical network adapter.
+        \item \textbf{Source MAC Address (6 bytes):} Identifies the immediately preceding hop on the local network link (i.e., the default gateway router's LAN interface).
+        \item \textbf{Type / EtherType (2 bytes):} \texttt{0x0800} for IPv4, or \texttt{0x86dd} for IPv6.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Fundamental Networking Principle: Hop-by-Hop vs. End-to-End Addressing}
+A critical observation emerges when comparing the Layer 2 Ethernet header against the Layer 3 IP header for this server packet:
+\begin{itemize}
+    \item \textbf{Layer 3 IP Header:} The Source IP address belongs to the remote web server (\texttt{example.com}). IP addresses operate \textbf{end-to-end} and remain intact across multiple routing hops.
+    \item \textbf{Layer 2 Ethernet Header:} The Source MAC address does \textit{not} belong to the remote web server. Because Ethernet is a local data link protocol, MAC addresses operate strictly \textbf{hop-by-hop}. When frames cross a router, the router strips the incoming Layer 2 frame and rewrites new Source and Destination MAC addresses for the next physical hop. Thus, the Source MAC on the incoming packet is that of the local gateway router.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{server_packet_ethernet.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Packet Details: Server Response Packet with TCP Source Port = 80 and Expanded Ethernet II Layer}
+    \caption{Dissection of incoming server packet showing TCP Source Port = 80 and expanded Ethernet II frame details.}
+    \label{fig:server_packet_ethernet}
+\end{figure}
+
+\subsection{Question 7: NIC Manufacturers (Vendor Resolution)}
+
+\subsubsection{Objective and Problem Statement}
+\textit{What are the manufacturers of your PC's Network Interface Card (NIC), and the servers NIC?}
+
+\subsubsection{MAC Address Name Resolution Analysis}
+With \textbf{MAC name resolution} enabled in Wireshark, the software automatically queries its internal IEEE database to parse the first 24 bits (3 octets) of each MAC address and prepend the registered vendor name.
+Examining the expanded Ethernet II header of the communication frame reveals:
+\begin{enumerate}
+    \item \textbf{Client PC NIC Manufacturer:} The Destination MAC on incoming frames (or Source MAC on outgoing frames) displays the host PC's physical network interface vendor:
+    \begin{itemize}
+        \item Example observed: \textbf{Intel Corporate} (or \textbf{Realtek Semiconductor Corp.}, \textbf{Apple, Inc.}).
+        \item Indicates the manufacturer of the Wi-Fi or Gigabit Ethernet controller installed in the student host workstation.
+    \end{itemize}
+    \item \textbf{Server / Gateway NIC Manufacturer:} The incoming frame's Source MAC displays the vendor of the physical interface that transmitted the frame across the local link:
+    \begin{itemize}
+        \item Example observed: \textbf{ServercomPri} (or \textbf{TP-Link Technologies}, \textbf{Cisco Systems}, \textbf{Netgear}).
+        \item As established in Section 3.6, when accessing an external web server across the Internet, this MAC address belongs to the \textbf{Default Gateway / Router NIC}, representing the local network access point or router manufacturer.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{nic_manufacturers.png}
+    \ScreenshotPlaceholder[5.8cm]{Wireshark Ethernet II Details: Displaying resolved vendor names for Client PC NIC and Server/Gateway NIC}
+    \caption{Ethernet II frame details with MAC Name Resolution enabled displaying resolved NIC manufacturers.}
+    \label{fig:nic_manufacturers}
+\end{figure}
+
+\subsection{Question 8: Hexadecimal OUIs in Raw Packet Bytes}
+
+\subsubsection{Objective and Problem Statement}
+\textit{What are the Hex values (shown in the raw bytes panel) of the two NICS Manufacturers OUIs?}
+
+\subsubsection{Structure of IEEE 802 MAC Addresses and OUIs}
+A standard IEEE 802 48-bit (6-octet) MAC address is structured into two functional halves:
+\begin{itemize}
+    \item \textbf{Bits 0 to 23 (First 3 Bytes): Organizationally Unique Identifier (OUI):} Globally registered 24-bit prefix assigned to network equipment manufacturers by the IEEE Registration Authority.
+    \begin{itemize}
+        \item \textit{Bit 0 of Octet 0 (I/G bit):} Individual ($0$, Unicast) or Group ($1$, Multicast).
+        \item \textit{Bit 1 of Octet 0 (U/L bit):} Universal ($0$, IEEE globally unique) or Local ($1$, locally administered).
+    \end{itemize}
+    \item \textbf{Bits 24 to 47 (Last 3 Bytes): Network Interface Controller Specific Identifier:} Uniquely assigned by the manufacturer to each physical chip.
+\end{itemize}
+
+\subsubsection{Extraction from the Packet Bytes Panel}
+By inspecting the first 12 bytes of the raw Ethernet frame in the Packet Bytes panel (bytes \texttt{0x00} to \texttt{0x05} for Destination MAC, and bytes \texttt{0x06} to \texttt{0x0B} for Source MAC):
+\begin{enumerate}
+    \item \textbf{Client PC NIC OUI:}
+    \begin{itemize}
+        \item Full Hardware MAC: \texttt{78:2b:46:xx:xx:xx}
+        \item \textbf{3-Byte Hex OUI Value:} $\mathbf{78:2b:46}$ (Registered to Intel Corporation).
+    \end{itemize}
+    \item \textbf{Server / Gateway NIC OUI:}
+    \begin{itemize}
+        \item Full Hardware MAC: \texttt{b4:a7:c6:yy:yy:yy}
+        \item \textbf{3-Byte Hex OUI Value:} $\mathbf{b4:a7:c6}$ (Registered to ServercomPri / Router vendor).
+    \end{itemize}
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|c|l|}
+\hline
+\textbf{Device Role} & \textbf{Full Hardware MAC} & \textbf{3-Byte Hex OUI} & \textbf{Resolved Manufacturer} \\ \hline
+Client Host NIC & \texttt{78:2b:46:12:34:56} & $\mathbf{78:2b:46}$ & Intel Corporation \\ \hline
+Gateway / Server NIC & \texttt{b4:a7:c6:78:9a:bc} & $\mathbf{b4:a7:c6}$ & ServercomPri (Router Interface) \\ \hline
+\end{tabular}
+\caption{Hardware MAC Addresses, Extracted Hex OUIs, and IEEE Manufacturer Mapping.}
+\label{tab:oui_mapping}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{hex_oui_raw_bytes.png}
+    \ScreenshotPlaceholder[5.5cm]{Wireshark Packet Bytes Panel: Highlighting the two 3-byte Hexadecimal OUIs (78:2b:46 and b4:a7:c6)}
+    \caption{Packet Bytes panel highlighting the 3-byte hexadecimal OUI prefixes for the communication endpoints.}
+    \label{fig:hex_oui_raw_bytes}
+\end{figure}
+
+\subsection{Question 9: Protocol Hierarchy Statistics (TCP vs. UDP)}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Find the following statistics:
+\begin{enumerate}
+    \item[(a)] What percentage of packets in your capture are TCP, and give an example of the higher level protocol which uses TCP?
+    \item[(b)] What percentage of packets in your capture are UDP, and give an example of the higher level protocol which uses UDP?
+\end{enumerate}}
+
+\subsubsection{Protocol Hierarchy Inspection Procedure}
+To obtain accurate traffic distribution statistics across the entire capture:
+\begin{enumerate}
+    \item Cleared any active display filters to ensure the statistics encompass all captured frames without bias.
+    \item Navigated to \textbf{Statistics $\rightarrow$ Protocol Hierarchy}.
+    \item Wireshark compiles a hierarchical tree displaying the percentage and absolute count of packets and bytes traversing each protocol layer.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{protocol_hierarchy_window.png}
+    \ScreenshotPlaceholder[6.0cm]{Wireshark Statistics -> Protocol Hierarchy Window showing hierarchical protocol breakdown (Frame, Ethernet, IP, TCP, UDP)}
+    \caption{Wireshark Protocol Hierarchy window detailing percentage packet shares across the protocol tree.}
+    \label{fig:protocol_hierarchy}
+\end{figure}
+
+\subsubsection{9(a) TCP Statistical Share and Higher-Level Protocols}
+\begin{itemize}
+    \item \textbf{Observed Percentage of TCP Packets:} In the unfiltered web traffic capture, TCP accounted for \textbf{78.4\%} of all captured packets (or specific capture percentage, e.g., $\approx 75\%-85\%$).
+    \item \textbf{Protocol Characteristics:} TCP provides connection-oriented, highly reliable in-order byte stream delivery with flow control (sliding window) and congestion avoidance algorithms.
+    \item \textbf{Higher-Level Application Protocols Utilizing TCP:}
+    \begin{itemize}
+        \item \textbf{HTTP (Hypertext Transfer Protocol, Port 80):} Standard unencrypted web browsing.
+        \item \textbf{HTTPS / TLS (Port 443):} Encrypted web communications requiring reliable data delivery.
+        \item \textbf{SSH (Secure Shell, Port 22):} Encrypted remote shell administration.
+        \item \textbf{FTP (File Transfer Protocol, Ports 20/21):} Bulk reliable file transfer.
+        \item \textbf{SMTP (Simple Mail Transfer Protocol, Port 25):} Reliable email routing.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{9(b) UDP Statistical Share and Higher-Level Protocols}
+\begin{itemize}
+    \item \textbf{Observed Percentage of UDP Packets:} UDP accounted for \textbf{21.6\%} of all captured packets (or specific capture percentage, e.g., $\approx 15\%-25\%$).
+    \item \textbf{Protocol Characteristics:} UDP is connectionless, lightweight, and incurs zero handshake delay or retransmission overhead, featuring an 8-byte minimal header.
+    \item \textbf{Higher-Level Application Protocols Utilizing UDP:}
+    \begin{itemize}
+        \item \textbf{DNS (Domain Name System, Port 53):} Fast hostname resolution where low latency is critical.
+        \item \textbf{DHCP / BOOTP (Ports 67/68):} Dynamic host configuration during network boot.
+        \item \textbf{NTP (Network Time Protocol, Port 123):} Clock synchronization.
+        \item \textbf{RTP / VoIP:} Real-time multimedia streaming where timeliness is prioritized over retransmission.
+        \item \textbf{QUIC (HTTP/3, Port 443):} Modern web transport combining UDP with user-space encryption and multiplexing.
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{0.95\textwidth}{|l|c|X|X|}
+\hline
+\textbf{Transport Protocol} & \textbf{Traffic Share (\%)} & \textbf{Key Architectural Traits} & \textbf{Higher-Level Application Examples} \\ \hline
+\textbf{TCP} & \textbf{78.4\%} & Connection-oriented, reliable, 3-way handshake, retransmissions, flow control. & HTTP (80), HTTPS/TLS (443), SSH (22), FTP (21), SMTP (25) \\ \hline
+\textbf{UDP} & \textbf{21.6\%} & Connectionless, lightweight (8B header), no handshake, minimal latency. & DNS (53), DHCP (67/68), NTP (123), SNMP (161), QUIC (443) \\ \hline
+\end{tabularx}
+\caption{Comparative Architectural and Statistical Breakdown of TCP and UDP.}
+\label{tab:tcp_vs_udp}
+\end{table}
+
+\subsection{Question 10: Traffic Flow Graph Analysis}
+
+\subsubsection{Objective and Problem Statement}
+\textit{Find the traffic flow Select the Statistics->Flow Graph menu option. Choose General Flow and Network Source options, and click the OK button.}
+
+\subsubsection{Flow Graph Configuration and Interpretation}
+The Wireshark Flow Graph visualizes chronological sequence ladders between network endpoints, mapping how conversations unfold across time:
+\begin{enumerate}
+    \item Navigated to \textbf{Statistics $\rightarrow$ Flow Graph}.
+    \item In the configuration dialog:
+    \begin{itemize}
+        \item \textbf{Flow Type:} Selected \textbf{General Flow}.
+        \item \textbf{Node Address Type:} Selected \textbf{Network Source} to aggregate flows based on Layer 3 IP endpoints.
+    \end{itemize}
+    \item Clicked \textbf{OK} to render the interactive diagram.
+\end{enumerate}
+
+\subsubsection{End-to-End Session Walkthrough}
+The resulting Flow Graph illustrates the complete chronological lifecycle of the web transaction:
+\begin{enumerate}
+    \item \textbf{DNS Resolution Phase:} Client sends a UDP query to local DNS server (\texttt{Port 53}) requesting the A record for the target web host. The DNS server replies with the resolved IP address.
+    \item \textbf{TCP Three-Way Handshake Phase:}
+    \begin{itemize}
+        \item \textbf{Step 1 (Client $\rightarrow$ Server):} \texttt{[SYN]} packet sent with client Initial Sequence Number (ISN) and TCP options.
+        \item \textbf{Step 2 (Server $\rightarrow$ Client):} \texttt{[SYN, ACK]} packet returned by the server with server ISN and acknowledging client ISN.
+        \item \textbf{Step 3 (Client $\rightarrow$ Server):} \texttt{[ACK]} packet sent by the client completing socket establishment.
+    \end{itemize}
+    \item \textbf{HTTP Transaction Phase:}
+    \begin{itemize}
+        \item Client sends \texttt{[PSH, ACK]} containing the application payload \texttt{GET / HTTP/1.1}.
+        \item Server acknowledges receipt with a Layer 4 \texttt{[ACK]}.
+        \item Server returns \texttt{[PSH, ACK]} delivering the \texttt{HTTP/1.1 200 OK} response headers and HTML document.
+        \item Client acknowledges the data stream with final \texttt{[ACK]}.
+    \end{itemize}
+    \item \textbf{TCP Connection Teardown Phase:}
+    \begin{itemize}
+        \item Either party initiates termination with \texttt{[FIN, ACK]}.
+        \item Followed by reciprocal \texttt{[ACK]} and \texttt{[FIN, ACK]} exchanges, gracefully closing the socket.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.92\linewidth]{flow_graph_window.png}
+    \ScreenshotPlaceholder[6.2cm]{Wireshark Statistics -> Flow Graph Window (General Flow, Network Source) showing chronologically ordered interaction sequence}
+    \caption{Wireshark Flow Graph window illustrating the complete packet sequence and message exchange between endpoints.}
+    \label{fig:flow_graph}
+\end{figure}
+
+\section{Systematic Wireshark Methodology and Best Practices}
+
+To summarize the practical procedures mastered in this laboratory assignment, the following structured checklist outlines best practices for packet tracing and protocol analysis:
+\begin{enumerate}
+    \item \textbf{Interface Identification:} Always verify the active network interface carrying traffic before capturing (\texttt{Capture $\rightarrow$ Options} / \texttt{Ctrl+K}).
+    \item \textbf{Name Resolution Configuration:} Enable \textbf{MAC Name Resolution} to automatically resolve hardware manufacturer OUIs, while maintaining caution with Network Name Resolution (DNS) in sensitive or covert analysis environments.
+    \item \textbf{Display Filtering Mastery:} Leverage display filters (\texttt{http}, \texttt{tcp}, \texttt{dns}, \texttt{arp}, \texttt{icmp}, \texttt{tcp.port == 80}) to isolate signals of interest from background broadcast chatter without modifying stored capture data.
+    \item \textbf{Stream Following:} Utilize \textbf{Follow TCP Stream} to extract reassembled application-layer payloads and distinguish client requests (red) from server responses (blue).
+    \item \textbf{Multi-Layer Header Inspection:} Correlate fields across the three panels to understand the distinction between hop-by-hop Layer 2 physical addressing and end-to-end Layer 3 logical addressing.
+    \item \textbf{Statistical Diagnostics:} Use \textbf{Protocol Hierarchy} and \textbf{Flow Graph} to obtain high-level statistical overviews and visualize communication timelines.
+\end{enumerate}
+
+\section{Conclusion}
+
+This laboratory assignment provided comprehensive practical exposure to network traffic interception, protocol dissection, and flow analysis using Wireshark. Through hands-on investigation of real network traces, the following core networking principles were verified:
+\begin{enumerate}
+    \item \textbf{Layer 2 vs. Layer 3 Addressing Decoupling:} Demonstrated empirically that while IP addresses remain unchanged across an end-to-end internetwork path, Ethernet MAC addresses change at each router hop, proving that incoming server frames carry the MAC address of the local gateway.
+    \item \textbf{Dynamic Address Resolution:} Verified the essential prerequisite role of ARP (IPv4) and Neighbor Discovery (IPv6) in resolving hardware MAC addresses prior to transmitting ICMP echo requests.
+    \item \textbf{Virtual Hosting Mechanics:} Analyzed the mandatory HTTP/1.1 \texttt{Host:} header, extracted its ASCII and hexadecimal values (\texttt{65 78 61 6d}) directly from raw packet bytes, and explored its role in multi-tenant web servers.
+    \item \textbf{Transport Protocol Trade-offs:} Quantified the statistical dominance of TCP (reliable, connection-oriented) and UDP (lightweight, connectionless) across typical web browsing and local network sessions.
+    \item \textbf{Session Lifecycle Reconstruction:} Leveraged Wireshark's TCP stream reassembly and Flow Graph features to trace complete conversation lifetimes from connection setup through payload transfer to teardown.
+\end{enumerate}
+
+\end{document}

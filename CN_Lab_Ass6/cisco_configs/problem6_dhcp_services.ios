@@ -1,0 +1,129 @@
+! ================================================================================
+! CISCO PACKET TRACER CONFIGURATION: PROBLEM 6
+! DHCP Server Deployment on JU-Main and JU-SL LANs
+! Provides both Dedicated Server-PT and Cisco IOS Router DHCP Implementations
+! ================================================================================
+
+! --------------------------------------------------------------------------------
+! METHOD 1: DEDICATED SERVER-PT CONFIGURATION (In Cisco Packet Tracer GUI)
+! --------------------------------------------------------------------------------
+! [A. JU-Main Campus DHCP Server: "JU-Main-DHCP-Server"]
+! Connect Server-PT to PC-LAB1-Switch Port FastEthernet0/10 via Straight-Through Cable.
+! Static IP Settings on Server:
+!   IP Address:      192.168.148.10
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.148.1
+!   DNS Server:      192.168.148.10
+!
+! Service Configuration (Desktop -> Services -> DHCP):
+!   Service:              ON
+!   Pool Name:            JU_MAIN_POOL (or serverPool)
+!   Default Gateway:      192.168.148.1
+!   DNS Server:           192.168.148.10
+!   Start IP Address:     192.168.148.20
+!   Subnet Mask:          255.255.255.0
+!   Maximum Number of Users: 50
+!   TFTP Server / WLC:    0.0.0.0
+!   Click "Save"
+!
+! [B. JU-SL Campus DHCP Server: "JU-SL-DHCP-Server"]
+! Connect Server-PT to PC-LAB2-Switch Port FastEthernet0/10 via Straight-Through Cable.
+! Static IP Settings on Server:
+!   IP Address:      192.168.149.10
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.149.1
+!   DNS Server:      192.168.149.10
+!
+! Service Configuration (Desktop -> Services -> DHCP):
+!   Service:              ON
+!   Pool Name:            JU_SL_POOL (or serverPool)
+!   Default Gateway:      192.168.149.1
+!   DNS Server:           192.168.149.10
+!   Start IP Address:     192.168.149.20
+!   Subnet Mask:          255.255.255.0
+!   Maximum Number of Users: 50
+!   TFTP Server / WLC:    0.0.0.0
+!   Click "Save"
+
+! --------------------------------------------------------------------------------
+! METHOD 2: CISCO IOS ROUTER-BASED DHCP SERVER CONFIGURATION
+! (Alternative standard enterprise deployment using Cisco 1818 / 1841 routers)
+! --------------------------------------------------------------------------------
+
+! --- [JU-Main-Router CLI Configuration] ---
+enable
+configure terminal
+
+! Exclude statically assigned addresses (gateway, servers, network/broadcast)
+ip dhcp excluded-address 192.168.148.1 192.168.148.19
+
+! Define DHCP Pool for JU-Main LAN
+ip dhcp pool JU_MAIN_POOL
+ network 192.168.148.0 255.255.255.0
+ default-router 192.168.148.1
+ dns-server 192.168.148.10
+ lease 7 0 0
+ exit
+
+end
+write memory
+
+! --- [JU-SL-Router CLI Configuration] ---
+enable
+configure terminal
+
+! Exclude statically assigned addresses (gateway, servers, network/broadcast)
+ip dhcp excluded-address 192.168.149.1 192.168.149.19
+
+! Define DHCP Pool for JU-SL LAN
+ip dhcp pool JU_SL_POOL
+ network 192.168.149.0 255.255.255.0
+ default-router 192.168.149.1
+ dns-server 192.168.149.10
+ lease 7 0 0
+ exit
+
+end
+write memory
+
+! --------------------------------------------------------------------------------
+! 3. HOST CONFIGURATION & VERIFICATION PROCEDURES
+! --------------------------------------------------------------------------------
+! For all hosts in JU-Main (PC1, PC2, PC3) and JU-SL (PC4, PC5, PC6):
+!   1. Open PC -> Desktop tab -> IP Configuration.
+!   2. Change selection from "Static" to "DHCP".
+!   3. Verify prompt reads: "DHCP request successful."
+!
+! Command Prompt Verification:
+! Host-M1> ipconfig /all
+! FastEthernet0 Connection:
+!    Connection-specific DNS Suffix..: 
+!    Physical Address................: 0001.64A1.0001
+!    DHCP Enabled....................: Yes
+!    IP Address......................: 192.168.148.20
+!    Subnet Mask.....................: 255.255.255.0
+!    Default Gateway.................: 192.168.148.1
+!    DHCP Server.....................: 192.168.148.10
+!    DNS Servers.....................: 192.168.148.10
+!
+! Host-S1> ipconfig /all
+! FastEthernet0 Connection:
+!    Connection-specific DNS Suffix..: 
+!    Physical Address................: 0001.64B1.0001
+!    DHCP Enabled....................: Yes
+!    IP Address......................: 192.168.149.20
+!    Subnet Mask.....................: 255.255.255.0
+!    Default Gateway.................: 192.168.149.1
+!    DHCP Server.....................: 192.168.149.10
+!    DNS Servers.....................: 192.168.149.10
+!
+! Cross-Campus Ping between DHCP Clients:
+! Host-M1> ping 192.168.149.20
+! Pinging 192.168.149.20 with 32 bytes of data:
+! Reply from 192.168.149.20: bytes=32 time=10ms TTL=126
+! Reply from 192.168.149.20: bytes=32 time=10ms TTL=126
+! Reply from 192.168.149.20: bytes=32 time=10ms TTL=126
+! Reply from 192.168.149.20: bytes=32 time=10ms TTL=126
+! Ping statistics: Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
+! ================================================================================
+

@@ -1,0 +1,156 @@
+
+================================================================================
+ EXPERIMENT 7: INTEGRATED ENTERPRISE LAN (CSE) WITH DHCP, DNS, WEB & FTP
+================================================================================
+[Step 1] Initial Server Configurations & DNS Records:
+------------------------------------------------------------
+ DNS Zone Database (CSE-DNS-Server)
+------------------------------------------------------------
+ Domain Name                  Type   TTL    IP Address
+ cse.myuniv.edu               A      300    192.168.100.10
+ dhcp.cse.myuniv.edu          A      300    192.168.100.2
+ dns.cse.myuniv.edu           A      300    192.168.100.4
+ ftp.cse.myuniv.edu           A      300    192.168.100.20
+ web.cse.myuniv.edu           A      300    192.168.100.10
+------------------------------------------------------------
+
+[Step 2] Dynamic DHCP Address Acquisition by Workstations (PC1, PC2, PC3):
+
+[PC1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.50
+ > Sent DHCPREQUEST for offered IP 192.168.100.50
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.50
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[PC2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.51
+ > Sent DHCPREQUEST for offered IP 192.168.100.51
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.51
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[PC3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.52
+ > Sent DHCPREQUEST for offered IP 192.168.100.52
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.52
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[Step 3] Active DHCP Leases in CSE LAN:
+------------------------------------------------------------
+ DHCP Active Leases Pool (CSE-DHCP-Server)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.96e1.0001       192.168.100.50   255.255.255.0    192.168.100.1
+ 0001.96e1.0002       192.168.100.51   255.255.255.0    192.168.100.1
+ 0001.96e1.0003       192.168.100.52   255.255.255.0    192.168.100.1
+------------------------------------------------------------
+
+[Step 4] DNS Name Resolution via Local DNS Server (192.168.100.4):
+
+PC1> nslookup cse.myuniv.edu
+Server:  dns.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    cse.myuniv.edu
+Address: 192.168.100.10
+
+PC1> nslookup ftp.cse.myuniv.edu
+Server:  dns.ftp.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    ftp.cse.myuniv.edu
+Address: 192.168.100.20
+
+[Step 5] Accessing Departmental Web Server via Domain Name:
+
+PC1> curl http://cse.myuniv.edu/
+
+PC1> nslookup cse.myuniv.edu
+Server:  dns.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    cse.myuniv.edu
+Address: 192.168.100.10
+HTTP/1.1 200 OK
+Content-Length: 371
+Content-Type: text/html; charset=UTF-8
+Server: Cisco-PacketTracer-PT-Server/8.0
+
+<!DOCTYPE html>
+<html>
+<head><title>Jadavpur University - CSE Department</title></head>
+<body style='font-family: Arial; padding: 20px;'>
+  <h1>JADAVPUR UNIVERSITY</h1>
+  <h2>Department of Computer Science & Engineering</h2>
+  <p>Welcome to the Departmental Portal (<b>cse.myuniv.edu</b>).</p>
+  <p>Assignment 6: Cisco Packet Tracer Network Emulation</p>
+</body>
+</html>
+
+
+[Step 6] Connecting to FTP Server and Downloading File:
+
+PC1> ftp ftp.cse.myuniv.edu
+
+PC1> nslookup ftp.cse.myuniv.edu
+Server:  dns.ftp.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    ftp.cse.myuniv.edu
+Address: 192.168.100.20
+Connected to ftp.cse.myuniv.edu.
+220 Welcome to Jadavpur University CSE FTP Server (Version 1.0)
+User (ftp.cse.myuniv.edu:(none)): csejadavpur
+331 Password required for csejadavpur
+Password: ******
+230 User csejadavpur logged in, proceed.
+ftp> dir
+150 Opening ASCII mode data connection for file list.
+-rw-r--r-- 1 ftp ftp     68 Nov 06 00:00 assignment6_guidelines.txt
+-rw-r--r-- 1 ftp ftp     53 Nov 06 00:00 cse_ju_syllabus.pdf
+-rw-r--r-- 1 ftp ftp     59 Nov 06 00:00 welcome.txt
+226 Transfer complete.
+ftp> get welcome.txt
+200 PORT command successful.
+150 Opening BINARY mode data connection for welcome.txt (59 bytes).
+226 Transfer complete.
+ftp: 59 bytes received in 0.05 seconds.
+ftp> quit
+221 Goodbye.
+
+[Step 7] Final MAC Forwarding Table on CSE-Switch:
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0001.96c1.0002    DYNAMIC     FastEthernet0/4
+1       0001.96c1.0004    DYNAMIC     FastEthernet0/5
+1       0001.96c1.0010    DYNAMIC     FastEthernet0/6
+1       0001.96c1.0020    DYNAMIC     FastEthernet0/7
+1       0001.96e1.0001    DYNAMIC     FastEthernet0/1
+1       0001.96e1.0002    DYNAMIC     FastEthernet0/2
+1       0001.96e1.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 7
+
+[Observation & Summary]:
+  - Full enterprise multi-service LAN implemented and validated successfully.
+  - Client dynamic lifecycle: Boot (DHCP) -> Domain Lookup (DNS) -> Web Browsing (HTTP) -> File Download (FTP).
+  - High-level services cooperate seamlessly over IEEE 802.3 Layer 2 microsegmentation.

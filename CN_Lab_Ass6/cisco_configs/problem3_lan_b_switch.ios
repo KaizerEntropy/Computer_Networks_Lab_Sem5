@@ -1,0 +1,159 @@
+! ================================================================================
+! CISCO PACKET TRACER CONFIGURATION & EXPERIMENT: PROBLEM 3
+! LAN-B (3 Hosts using a Cisco Catalyst 2950 Switch)
+! Dynamic ARP Table & MAC Forwarding Table Evolution Analysis
+! ================================================================================
+
+! --------------------------------------------------------------------------------
+! 1. CISCO CATALYST 2950-24 SWITCH CONFIGURATION (Switch-B)
+! --------------------------------------------------------------------------------
+enable
+configure terminal
+hostname Switch-B
+
+! Configure Access Interfaces for End Hosts
+interface FastEthernet0/1
+ description Connected to Host-B1 (PC-B1)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/2
+ description Connected to Host-B2 (PC-B2)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/3
+ description Connected to Host-B3 (PC-B3)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+end
+write memory
+
+! --------------------------------------------------------------------------------
+! 2. END HOST NETWORK PARAMETERS (LAN-B: Subnet 192.168.20.0/24)
+! --------------------------------------------------------------------------------
+! Host-B1:
+!   IP Address:    192.168.20.1
+!   Subnet Mask:   255.255.255.0
+!   Default GW:    None
+!   MAC Address:   0060.2F11.0001
+!   Connected to:  Switch-B Fa0/1 (Copper Straight-Through)
+!
+! Host-B2:
+!   IP Address:    192.168.20.2
+!   Subnet Mask:   255.255.255.0
+!   Default GW:    None
+!   MAC Address:   0060.2F22.0002
+!   Connected to:  Switch-B Fa0/2 (Copper Straight-Through)
+!
+! Host-B3:
+!   IP Address:    192.168.20.3
+!   Subnet Mask:   255.255.255.0
+!   Default GW:    None
+!   MAC Address:   0060.2F33.0003
+!   Connected to:  Switch-B Fa0/3 (Copper Straight-Through)
+
+! --------------------------------------------------------------------------------
+! 3. BEFORE PING: RECORD INITIAL ARP & MAC FORWARDING TABLES
+! --------------------------------------------------------------------------------
+! [Host-B1 Command Prompt]
+! > arp -a
+! No ARP Entries Found.
+!
+! [Host-B2 Command Prompt]
+! > arp -a
+! No ARP Entries Found.
+!
+! [Host-B3 Command Prompt]
+! > arp -a
+! No ARP Entries Found.
+!
+! [Switch-B CLI]
+! Switch-B# show mac-address-table
+!           Mac Address Table
+! -------------------------------------------
+! Vlan    Mac Address       Type        Ports
+! ----    -----------       --------    -----
+! Total Mac Addresses for this module: 0
+!
+! (Note: At initial boot, the switch CAM table has not received any source frames)
+
+! --------------------------------------------------------------------------------
+! 4. EXECUTE PAIRWISE PINGS
+! --------------------------------------------------------------------------------
+! [Step 1: Host-B1 pings Host-B2]
+! Host-B1> ping 192.168.20.2
+! Pinging 192.168.20.2 with 32 bytes of data:
+! Reply from 192.168.20.2: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.2: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.2: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.2: bytes=32 time<1ms TTL=128
+!
+! [Step 2: Host-B2 pings Host-B3]
+! Host-B2> ping 192.168.20.3
+! Pinging 192.168.20.3 with 32 bytes of data:
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+!
+! [Step 3: Host-B1 pings Host-B3]
+! Host-B1> ping 192.168.20.3
+! Pinging 192.168.20.3 with 32 bytes of data:
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+! Reply from 192.168.20.3: bytes=32 time<1ms TTL=128
+
+! --------------------------------------------------------------------------------
+! 5. AFTER PING: RECORD UPDATED ARP & MAC FORWARDING TABLES
+! --------------------------------------------------------------------------------
+! [Host-B1 Command Prompt]
+! > arp -a
+!   Internet Address      Physical Address      Type
+!   192.168.20.2          0060.2f22.0002        dynamic
+!   192.168.20.3          0060.2f33.0003        dynamic
+!
+! [Host-B2 Command Prompt]
+! > arp -a
+!   Internet Address      Physical Address      Type
+!   192.168.20.1          0060.2f11.0001        dynamic
+!   192.168.20.3          0060.2f33.0003        dynamic
+!
+! [Host-B3 Command Prompt]
+! > arp -a
+!   Internet Address      Physical Address      Type
+!   192.168.20.1          0060.2f11.0001        dynamic
+!   192.168.20.2          0060.2f22.0002        dynamic
+!
+! [Switch-B CLI]
+! Switch-B# show mac-address-table
+!           Mac Address Table
+! -------------------------------------------
+! Vlan    Mac Address       Type        Ports
+! ----    -----------       --------    -----
+! 1       0060.2f11.0001    DYNAMIC     Fa0/1
+! 1       0060.2f22.0002    DYNAMIC     Fa0/2
+! 1       0060.2f33.0003    DYNAMIC     Fa0/3
+! Total Mac Addresses for this module: 3
+
+! --------------------------------------------------------------------------------
+! 6. SWITCH LEARNING & FORWARDING MECHANISM (CAM TABLE EXPLANATION)
+! --------------------------------------------------------------------------------
+! 1. Backward Learning: Whenever an Ethernet frame enters a port, the switch
+!    reads the 48-bit Source MAC address and associates it with the receiving port.
+! 2. Selective Forwarding: When a frame's Destination MAC matches a CAM entry,
+!    the frame is forwarded ONLY to that single egress port (microsegmentation).
+! 3. Flooding: If the Destination MAC is unknown or broadcast (FF:FF:FF:FF:FF:FF),
+!    the frame is flooded across all ports belonging to the same VLAN except ingress.
+! 4. Collision Elimination: Each switch port defines a separate collision domain,
+!    operating in Full-Duplex 100 Mbps mode.
+! ================================================================================
+

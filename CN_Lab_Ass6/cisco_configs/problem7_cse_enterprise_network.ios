@@ -1,0 +1,202 @@
+! ================================================================================
+! CISCO PACKET TRACER CONFIGURATION: PROBLEM 7
+! Complete Departmental LAN (CSE) with Layer-2 Switch, Dynamic DHCP, 
+! Local DNS Server (Domain: cse.myuniv.edu), Web Server, and FTP Server
+! ================================================================================
+
+! --------------------------------------------------------------------------------
+! 1. CISCO CATALYST 2950-24 SWITCH CONFIGURATION: CSE-Switch
+! --------------------------------------------------------------------------------
+enable
+configure terminal
+hostname CSE-Switch
+
+! Host Ports (Access VLAN 1)
+interface range FastEthernet0/1 - 3
+ description End User Workstations (PC1, PC2, PC3)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+! Server Ports (Access VLAN 1)
+interface FastEthernet0/4
+ description CSE-DHCP-Server
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/5
+ description CSE-DNS-Server
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/6
+ description CSE-Web-Server (HTTP/HTTPS)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/7
+ description CSE-FTP-Server
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+end
+write memory
+
+! --------------------------------------------------------------------------------
+! 2. SERVER FIXED IP & SERVICE CONFIGURATIONS (Subnet 192.168.100.0/24)
+! --------------------------------------------------------------------------------
+
+! [A. CSE-DHCP-Server (Server-PT)]
+! Interface FastEthernet0:
+!   IP Address:      192.168.100.2
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.100.1
+!   DNS Server:      192.168.100.4
+!
+! DHCP Service Setup (Services -> DHCP):
+!   Service:              ON
+!   Pool Name:            CSE_POOL
+!   Default Gateway:      192.168.100.1
+!   DNS Server:           192.168.100.4
+!   Start IP Address:     192.168.100.50
+!   Subnet Mask:          255.255.255.0
+!   Maximum Users:        50
+!   Click "Save"
+
+! [B. CSE-DNS-Server (Server-PT)]
+! Interface FastEthernet0:
+!   IP Address:      192.168.100.4
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.100.1
+!   DNS Server:      192.168.100.4 (Loopback to itself)
+!
+! DNS Service Setup (Services -> DNS):
+!   Service: ON
+!   Domain Records to Add (Resource Record Type: A Record):
+!   ---------------------------------------------------------------------------
+!   Name                      Type      Address / Value
+!   ---------------------------------------------------------------------------
+!   cse.myuniv.edu            A Record  192.168.100.10  (Web Server Root Domain)
+!   web.cse.myuniv.edu        A Record  192.168.100.10  (Web Server Hostname)
+!   ftp.cse.myuniv.edu        A Record  192.168.100.20  (FTP Server Hostname)
+!   dns.cse.myuniv.edu        A Record  192.168.100.4   (DNS Server Hostname)
+!   dhcp.cse.myuniv.edu       A Record  192.168.100.2   (DHCP Server Hostname)
+!   ---------------------------------------------------------------------------
+
+! [C. CSE-Web-Server (Server-PT)]
+! Interface FastEthernet0:
+!   IP Address:      192.168.100.10
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.100.1
+!   DNS Server:      192.168.100.4
+!
+! HTTP Service Setup (Services -> HTTP):
+!   HTTP: ON
+!   HTTPS: ON
+!   Edit index.html:
+!   ---------------------------------------------------------------------------
+!   <!DOCTYPE html>
+!   <html>
+!   <head><title>Jadavpur University - CSE Department</title></head>
+!   <body style="font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px;">
+!     <h1 style="color: #003366;">JADAVPUR UNIVERSITY</h1>
+!     <h2 style="color: #660000;">Department of Computer Science & Engineering</h2>
+!     <hr/>
+!     <h3>Computer Networks Laboratory — Assignment 6 Portal</h3>
+!     <p>Welcome to the Departmental Intranet Web Portal (<b>cse.myuniv.edu</b>).</p>
+!     <ul>
+!       <li>Host Address Resolution: Configured via Local DNS Server (192.168.100.4)</li>
+!       <li>Dynamic IP Allocation: Managed by Local DHCP Server (192.168.100.2)</li>
+!       <li>File Repository: Accessible via FTP at <b>ftp.cse.myuniv.edu</b></li>
+!     </ul>
+!   </body>
+!   </html>
+!   ---------------------------------------------------------------------------
+
+! [D. CSE-FTP-Server (Server-PT)]
+! Interface FastEthernet0:
+!   IP Address:      192.168.100.20
+!   Subnet Mask:     255.255.255.0
+!   Default Gateway: 192.168.100.1
+!   DNS Server:      192.168.100.4
+!
+! FTP Service Setup (Services -> FTP):
+!   FTP Service: ON
+!   User Setup:
+!     Username:    csejadavpur
+!     Password:    networks123
+!     Permissions: [x] Read  [x] Write  [x] Delete  [x] Rename  [x] List
+!     Click "Add"
+!   Sample Files hosted on FTP:
+!     - assignment6_guidelines.txt
+!     - cse_ju_lab_schedule.pdf
+!     - welcome_cse.txt
+
+! --------------------------------------------------------------------------------
+! 3. WORKSTATION VERIFICATION (PC1, PC2, PC3)
+! --------------------------------------------------------------------------------
+! Step 3.1: Verify Dynamic DHCP Lease
+! Host PC1 Command Prompt:
+! PC1> ipconfig /all
+! FastEthernet0 Connection:
+!    Connection-specific DNS Suffix..: cse.myuniv.edu
+!    Physical Address................: 0001.9611.0001
+!    DHCP Enabled....................: Yes
+!    IP Address......................: 192.168.100.50
+!    Subnet Mask.....................: 255.255.255.0
+!    Default Gateway.................: 192.168.100.1
+!    DHCP Server.....................: 192.168.100.2
+!    DNS Servers.....................: 192.168.100.4
+!
+! Step 3.2: Verify Domain Name Resolution (DNS Query)
+! PC1> nslookup cse.myuniv.edu
+! Server: dns.cse.myuniv.edu
+! Address: 192.168.100.4
+!
+! Name: cse.myuniv.edu
+! Address: 192.168.100.10
+!
+! PC1> nslookup ftp.cse.myuniv.edu
+! Server: dns.cse.myuniv.edu
+! Address: 192.168.100.4
+!
+! Name: ftp.cse.myuniv.edu
+! Address: 192.168.100.20
+!
+! Step 3.3: Verify Web Server Access (HTTP Session)
+! Open Desktop -> Web Browser on PC1.
+! URL: http://cse.myuniv.edu (or http://web.cse.myuniv.edu)
+! Browser displays the custom Jadavpur University CSE Department Intranet Portal!
+!
+! Step 3.4: Verify FTP File Transfer Session
+! PC1 Command Prompt:
+! PC1> ftp ftp.cse.myuniv.edu
+! Trying 192.168.100.20 ...
+! Connected to ftp.cse.myuniv.edu.
+! 220 Welcome to Jadavpur University CSE FTP Server
+! User (ftp.cse.myuniv.edu:(none)): csejadavpur
+! 331 Password required for csejadavpur
+! Password: 
+! 230 User csejadavpur logged in.
+! ftp> dir
+! -rw-r--r-- 1 ftp ftp 2048 Nov 6 00:00 assignment6_guidelines.txt
+! -rw-r--r-- 1 ftp ftp 4096 Nov 6 00:00 cse_ju_lab_schedule.pdf
+! -rw-r--r-- 1 ftp ftp 1024 Nov 6 00:00 welcome_cse.txt
+! ftp> get welcome_cse.txt
+! 200 PORT command successful.
+! 150 Opening BINARY mode data connection for welcome_cse.txt (1024 bytes).
+! 226 Transfer complete.
+! ftp: 1024 bytes received in 0.05 seconds.
+! ftp> quit
+! 221 Goodbye.
+! ================================================================================
+

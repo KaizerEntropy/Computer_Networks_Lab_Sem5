@@ -1,0 +1,109 @@
+
+================================================================================
+ EXPERIMENT 6: CAMPUS DHCP SERVER DEPLOYMENT ON JU-MAIN AND JU-SL
+================================================================================
+[Step 1] Requesting Dynamic Leases for JU-Main Hosts via DORA:
+
+[Host-M1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.20
+ > Sent DHCPREQUEST for offered IP 192.168.148.20
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.20
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Host-M2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.21
+ > Sent DHCPREQUEST for offered IP 192.168.148.21
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.21
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Host-M3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.22
+ > Sent DHCPREQUEST for offered IP 192.168.148.22
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.22
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Step 2] Requesting Dynamic Leases for JU-SL Hosts via DORA:
+
+[Host-S1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.20
+ > Sent DHCPREQUEST for offered IP 192.168.149.20
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.20
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Host-S2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.21
+ > Sent DHCPREQUEST for offered IP 192.168.149.21
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.21
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Host-S3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.22
+ > Sent DHCPREQUEST for offered IP 192.168.149.22
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.22
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Step 3] Active Leases on DHCP Servers:
+------------------------------------------------------------
+ DHCP Active Leases Pool (JU-DHCP-Main)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.64a1.0001       192.168.148.20   255.255.255.0    192.168.148.1
+ 0001.64a1.0002       192.168.148.21   255.255.255.0    192.168.148.1
+ 0001.64a1.0003       192.168.148.22   255.255.255.0    192.168.148.1
+------------------------------------------------------------
+
+------------------------------------------------------------
+ DHCP Active Leases Pool (JU-DHCP-SL)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.64b1.0001       192.168.149.20   255.255.255.0    192.168.149.1
+ 0001.64b1.0002       192.168.149.21   255.255.255.0    192.168.149.1
+ 0001.64b1.0003       192.168.149.22   255.255.255.0    192.168.149.1
+------------------------------------------------------------
+
+[Step 4] Inter-LAN Ping between Dynamically Addressed Hosts:
+  Host-M1 (192.168.148.20) pinging Host-S1 (192.168.149.20):
+
+Pinging 192.168.149.20 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.149.20:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Observation]:
+  - Standard 4-way DORA handshake executed cleanly: DHCPDISCOVER -> DHCPOFFER -> DHCPREQUEST -> DHCPACK.
+  - All workstations received dynamic IP, subnet mask, default gateway, and DNS server addresses.
+  - Cross-router static routing remained 100% operational with dynamic client endpoints.

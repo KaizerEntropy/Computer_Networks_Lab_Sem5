@@ -1,0 +1,25 @@
+[SECTION 1: SYSTEM IDENTIFICATION]
+Project: Computer Networks Laboratory Mini Group Project
+Department: Computer Science and Engineering, Jadavpur University
+Authors: Diptarko Bhattacharjee & Group
+Protocols Selected:
+ - Basket 1 (Network Layer Bootstrap): BOOTP (RFC 951, RFC 1048, RFC 1542)
+ - Basket 2 (Transport/Network Host Config): DHCP (RFC 2131, RFC 2132)
+ - Basket 3 (Application Layer Remote Shell): TELNET (RFC 854, RFC 855)
+
+[SECTION 2: ERROR DETECTION & CORRECTION SCHEMES]
+1. 16-bit Internet Checksum (RFC 1071)
+2. CRC-8 (Generator Polynomial: x^8 + x^7 + x^6 + x^4 + x^2 + 1)
+3. CRC-10 (Generator Polynomial: x^10 + x^9 + x^5 + x^4 + x + 1)
+4. CRC-16 (Generator Polynomial: x^16 + x^15 + x^2 + 1)
+5. CRC-32 (IEEE 802.3 Ethernet Standard Polynomial)
+6. Extended Hamming Code SEC-DED (Single Error Correction, Double Error Detection)
+7. Two-Dimensional Parity Check (Longitudinal & Vertical Redundancy Check)
+
+[SECTION 3: CHANNEL IMPAIRMENT RESILIENCE]
+- Probabilistic Packet Loss handling via Stop-and-Wait ARQ & Exponential Retransmission.
+- Bit-Corruption Detection with selective NACK or Timeout recovery.
+- Network Latency, Jitter, and Delay simulation exceeding socket timeouts.
+- Mathematical blind-spot demonstrations: Checksum-blind and CRC-blind error vectors.
+- Bit-exact reconstruction verified across separate physical devices over TCP/UDP sockets.
+

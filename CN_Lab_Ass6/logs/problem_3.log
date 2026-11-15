@@ -1,0 +1,121 @@
+
+================================================================================
+ EXPERIMENT 3: LAN-B (3 HOSTS VIA SWITCH) & MAC/ARP TABLE DYNAMICS
+================================================================================
+
+>>> [PHASE 1: BEFORE PING - RECORD INITIAL TABLES] <<<
+
+--- Host-B1 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Host-B2 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B2
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Host-B3 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B3
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (Initial) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+Total Mac Addresses for this module: 0
+
+>>> [PHASE 2: EXECUTE ALL-PAIRS PINGS] <<<
+
+[Ping 1: Host-B1 -> Host-B2 (192.168.20.2)]
+
+Pinging 192.168.20.2 with 32 bytes of data:
+Reply from 192.168.20.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Ping 2: Host-B2 -> Host-B3 (192.168.20.3)]
+
+Pinging 192.168.20.3 with 32 bytes of data:
+Reply from 192.168.20.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Ping 3: Host-B1 -> Host-B3 (192.168.20.3)]
+
+Pinging 192.168.20.3 with 32 bytes of data:
+Reply from 192.168.20.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+>>> [PHASE 3: AFTER PING - RECORD UPDATED TABLES] <<<
+
+--- Host-B1 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.2          0060.2f22.0002        dynamic
+  192.168.20.3          0060.2f33.0003        dynamic
+------------------------------------------------------------
+
+--- Host-B2 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B2
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.1          0060.2f11.0001        dynamic
+  192.168.20.3          0060.2f33.0003        dynamic
+------------------------------------------------------------
+
+--- Host-B3 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B3
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.1          0060.2f11.0001        dynamic
+  192.168.20.2          0060.2f22.0002        dynamic
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (After Pings) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0060.2f11.0001    DYNAMIC     FastEthernet0/1
+1       0060.2f22.0002    DYNAMIC     FastEthernet0/2
+1       0060.2f33.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 3
+
+[Observation & Comparison with Problem 2]:
+  - Unlike Hub-A, Switch-B performs Backward MAC Learning from source frames.
+  - Initial MAC table was empty. As packets flowed, ports Fa0/1, Fa0/2, Fa0/3 were
+    associated with the corresponding host MAC addresses.
+  - Subsequent unicast frames were selectively switched ONLY to the destination port,
+    eliminating collision domains (microsegmentation) and conserving bandwidth.

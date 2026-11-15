@@ -1,0 +1,80 @@
+
+================================================================================
+ EXPERIMENT 1: BACK-TO-BACK HOST INTERCONNECTION VIA CROSSOVER CABLE
+================================================================================
+[Step 1] Initial IP Configurations:
+
+FastEthernet0 Connection:
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0001.64a1.0001
+   DHCP Enabled....................: No
+   IP Address......................: 192.168.1.1
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: 0.0.0.0
+
+FastEthernet0 Connection:
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0001.64d4.0002
+   DHCP Enabled....................: No
+   IP Address......................: 192.168.1.2
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: 0.0.0.0
+
+[Step 2] Initial ARP Caches (Cold State):
+------------------------------------------------------------
+ ARP Cache on Host-1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-2
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+[Step 3] Executing Ping from Host-1 (192.168.1.1) -> Host-2 (192.168.1.2):
+
+Pinging 192.168.1.2 with 32 bytes of data:
+Reply from 192.168.1.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 4] Executing Reverse Ping from Host-2 (192.168.1.2) -> Host-1 (192.168.1.1):
+
+Pinging 192.168.1.1 with 32 bytes of data:
+Reply from 192.168.1.1: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 5] Post-Ping ARP Caches (Resolved State):
+------------------------------------------------------------
+ ARP Cache on Host-1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.2           0001.64d4.0002        dynamic
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-2
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.1           0001.64a1.0001        dynamic
+------------------------------------------------------------
+
+[Observation & Conclusion]:
+  - Physical Media: Ethernet crossover pinout successfully pairs DTE Tx pins (1,2)
+    with DTE Rx pins (3,6) between two peer PCs without an intervening DCE.
+  - ARP Mechanics: Initial ping triggered an ARP broadcast request; upon receipt
+    of the unicast ARP reply, both hosts populated dynamic ARP entries.
+  - Result: 0% packet loss, bilateral ping verified successfully.

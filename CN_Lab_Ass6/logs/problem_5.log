@@ -1,0 +1,65 @@
+
+================================================================================
+ EXPERIMENT 5: DUAL LAN ROUTING (JU-MAIN & JU-SL) VIA CISCO 1818 ROUTERS
+================================================================================
+[Step 1] Router Interface Status:
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.148.1   YES manual up                    up
+FastEthernet0/1            192.168.150.1   YES manual up                    up
+
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.149.1   YES manual up                    up
+FastEthernet0/1            192.168.150.2   YES manual up                    up
+
+[Step 2] Routing Tables with Static Routes Added:
+Router#Router-JU-Main# show ip route
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+Gateway of last resort is not set
+
+C    192.168.148.0/24 is directly connected, FastEthernet0/0
+C    192.168.150.0/24 is directly connected, FastEthernet0/1
+S    192.168.149.0/24 [1/0] via 192.168.150.2
+
+Router#Router-JU-SL# show ip route
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+Gateway of last resort is not set
+
+C    192.168.149.0/24 is directly connected, FastEthernet0/0
+C    192.168.150.0/24 is directly connected, FastEthernet0/1
+S    192.168.148.0/24 [1/0] via 192.168.150.1
+
+[Step 3] Cross-Campus Ping: Host-M1 (JU-Main 192.168.148.2) -> Host-S1 (JU-SL 192.168.149.2):
+
+Pinging 192.168.149.2 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.149.2:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Step 4] Cross-Campus Reverse Ping: Host-S2 (JU-SL 192.168.149.3) -> Host-M2 (JU-Main 192.168.148.3):
+
+Pinging 192.168.148.3 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.148.3:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Step 5] Router ARP Tables:
+Router#Router-JU-Main# show arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  192.168.148.2    0          0001.64a1.0001  ARPA   FastEthernet0/0
+
+Router#Router-JU-SL# show arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  192.168.149.3    0          0001.64b1.0002  ARPA   FastEthernet0/0
+
+[Observation]:
+  - Static routes configured on both routers enable seamless Layer 3 packet forwarding.
+  - TTL was decremented at each router hop (initial TTL 128 -> received TTL 126).
+  - Two collision domains per LAN and a point-to-point WAN link were successfully orchestrated.

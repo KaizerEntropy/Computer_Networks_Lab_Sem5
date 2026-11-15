@@ -1,0 +1,18 @@
+help
+network_info
+status
+ping
+calc 1024 * 768
+calc 500 / 25
+echo [JU-CSE-CN-LAB] Simulating Network, Transport and Application Protocols
+echo [BOOTP] Bootstrap Protocol executed successfully over UDP port 6767
+echo [DHCP] Dynamic Host Configuration Protocol DORA completed over UDP port 6769
+echo [TELNET] Application layer NVT terminal session running over TCP port 2323
+DATA:FRAME_CHUNK_001: Header=JU-CSE-Payload, Protocol=BOOTP/DHCP/TELNET, Checksum=Verified
+DATA:FRAME_CHUNK_002: Timestamp=2026-11-15, Status=Active, RoutingTable=DefaultGateway
+DATA:FRAME_CHUNK_003: FrameSequence=Stop-and-Wait ARQ, FCS=IEEE-802.3-CRC32
+DATA:FRAME_CHUNK_004: Hostname=client-workstation.campus.net, SubnetMask=255.255.255.0
+DATA:FRAME_CHUNK_005: EndOfTransmission: Bit-exact delivery guaranteed across sockets
+stats
+exit
+

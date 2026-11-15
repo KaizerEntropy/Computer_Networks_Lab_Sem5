@@ -1,0 +1,99 @@
+================================================================================
+CISCO PACKET TRACER EXPERIMENT GUIDE: PROBLEM 1
+Back-to-Back Host Interconnection using Crossover Cable
+================================================================================
+
+1. OBJECTIVE:
+   Connect two end hosts (PC0 and PC1) directly using an Ethernet Crossover Cable,
+   configure static IPv4 addresses on the same logical IP subnet, and verify
+   bidirectional Layer-3 reachability via ICMP Echo Request / Echo Reply (ping).
+
+2. NETWORK TOPOLOGY & HARDWARE SPECIFICATIONS:
+   - Device 1: PC-PT (Generic End Device) named "Host-1" (or PC0)
+     * Interface: FastEthernet0
+     * IPv4 Address: 192.168.1.1
+     * Subnet Mask: 255.255.255.0 (/24)
+     * Default Gateway: None (Directly connected peer)
+     * MAC Address: 0001.64A1.B2C3
+
+   - Device 2: PC-PT (Generic End Device) named "Host-2" (or PC1)
+     * Interface: FastEthernet0
+     * IPv4 Address: 192.168.1.2
+     * Subnet Mask: 255.255.255.0 (/24)
+     * Default Gateway: None (Directly connected peer)
+     * MAC Address: 0001.64D4.E5F6
+
+   - Physical Media: Copper Cross-Over Cable (orange dashed line in Packet Tracer)
+     * Connects Host-1 FastEthernet0 <---> Host-2 FastEthernet0
+     * Pinout: T568A to T568B crossover wiring
+       - Pin 1 (Tx+) <---> Pin 3 (Rx+)
+       - Pin 2 (Tx-) <---> Pin 6 (Rx-)
+       - Pin 3 (Rx+) <---> Pin 1 (Tx+)
+       - Pin 6 (Rx-) <---> Pin 2 (Tx-)
+
+3. STEP-BY-STEP CISCO PACKET TRACER PROCEDURES:
+   Step 3.1: Drag two generic PCs ("PC-PT") from End Devices to workspace.
+   Step 3.2: Select "Connections" -> "Copper Cross-Over" cable.
+   Step 3.3: Click PC0 -> select FastEthernet0; connect to PC1 -> select FastEthernet0.
+             Verify green link lights appear at both interface ends.
+   Step 3.4: Configure Host-1 (PC0):
+             - Click PC0 -> Desktop tab -> IP Configuration.
+             - Select "Static".
+             - IP Address: 192.168.1.1
+             - Subnet Mask: 255.255.255.0
+   Step 3.5: Configure Host-2 (PC1):
+             - Click PC1 -> Desktop tab -> IP Configuration.
+             - Select "Static".
+             - IP Address: 192.168.1.2
+             - Subnet Mask: 255.255.255.0
+
+4. EXECUTION & CLI COMMANDS:
+   Open Command Prompt on Host-1 (PC0):
+   > ipconfig
+   FastEthernet0 Connection:
+      IP Address......................: 192.168.1.1
+      Subnet Mask.....................: 255.255.255.0
+      Default Gateway.................: 0.0.0.0
+
+   Inspect Initial ARP Cache (Empty):
+   > arp -a
+   No ARP Entries Found.
+
+   Execute ICMP Ping:
+   > ping 192.168.1.2
+
+   Pinging 192.168.1.2 with 32 bytes of data:
+   Reply from 192.168.1.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.2: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.2: bytes=32 time<1ms TTL=128
+
+   Ping statistics for 192.168.1.2:
+       Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+   Approximate round trip times in milli-seconds:
+       Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+   Inspect Updated ARP Cache on Host-1:
+   > arp -a
+     Internet Address      Physical Address      Type
+     192.168.1.2           0001.64d4.e5f6        dynamic
+
+   Execute Reverse Ping from Host-2 (PC1):
+   > ping 192.168.1.1
+   Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+   Reply from 192.168.1.1: bytes=32 time<1ms TTL=128
+
+5. THEORETICAL ANALYSIS & OBSERVATIONS:
+   - Why Crossover Cable? 
+     Both PC network cards operate as Data Terminal Equipment (DTE) transmitters on pins
+     1 & 2 and receivers on pins 3 & 6. Without an intermediate DCE (switch), a straight-through
+     cable would connect transmitter to transmitter, resulting in zero signal reception.
+     The crossover cable crosses pins 1,2 with 3,6, completing the physical circuit.
+   - ARP Resolution:
+     Before the first ICMP Echo Request, Host-1 encapsulates an ARP Request broadcast
+     (ff:ff:ff:ff:ff:ff). Host-2 replies with its unicast MAC. Host-1 caches this in its
+     ARP table, enabling encapsulation of the Ethernet II frame.
+================================================================================
+

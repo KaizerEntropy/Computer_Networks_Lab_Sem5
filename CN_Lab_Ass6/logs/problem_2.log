@@ -1,0 +1,57 @@
+
+================================================================================
+ EXPERIMENT 2: LAN-A (3 HOSTS CONNECTED VIA A LAYER-1 HUB)
+================================================================================
+[Step 1] Network IP Topology (LAN-A: 192.168.10.0/24):
+  - Host-A1: 192.168.10.1 (Connected to Hub-A Fa0)
+  - Host-A2: 192.168.10.2 (Connected to Hub-A Fa1)
+  - Host-A3: 192.168.10.3 (Connected to Hub-A Fa2)
+
+[Step 2] Pairwise Ping 1: Host-A1 -> Host-A2:
+
+Pinging 192.168.10.2 with 32 bytes of data:
+Reply from 192.168.10.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 3] Pairwise Ping 2: Host-A2 -> Host-A3:
+
+Pinging 192.168.10.3 with 32 bytes of data:
+Reply from 192.168.10.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 4] Pairwise Ping 3: Host-A1 -> Host-A3:
+
+Pinging 192.168.10.3 with 32 bytes of data:
+Reply from 192.168.10.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 5] Hub-A Layer-1 Statistics:
+  - Total bits/frames repeated unconditionally: 30
+  - Collision Domain Count: 1 (Shared across all 3 ports)
+  - Broadcast Domain Count: 1
+
+[Observation & Conclusion]:
+  - Hub acts as a Layer-1 repeater: bits received on any port are echoed to all other ports.
+  - All stations receive all traffic; filtering occurs only at Layer 2 inside host NICs.
+  - All pairs demonstrated 100% ICMP reachability.

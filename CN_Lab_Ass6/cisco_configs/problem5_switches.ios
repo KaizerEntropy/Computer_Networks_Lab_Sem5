@@ -1,0 +1,80 @@
+! ================================================================================
+! CISCO IOS SWITCH CONFIGURATIONS: PC-LAB1-Switch & PC-LAB2-Switch (Cisco 2950-24)
+! ================================================================================
+
+! --------------------------------------------------------------------------------
+! 1. PC-LAB1-Switch (JU-Main Campus LAN Switch)
+! --------------------------------------------------------------------------------
+enable
+configure terminal
+hostname PC-LAB1-Switch
+
+interface FastEthernet0/1
+ description Host-M1 (PC1)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/2
+ description Host-M2 (PC2)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/3
+ description Host-M3 (PC3)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/24
+ description Uplink to Router-JU-Main FastEthernet0/0
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+end
+write memory
+
+! --------------------------------------------------------------------------------
+! 2. PC-LAB2-Switch (JU-SL Campus LAN Switch)
+! --------------------------------------------------------------------------------
+enable
+configure terminal
+hostname PC-LAB2-Switch
+
+interface FastEthernet0/1
+ description Host-S1 (PC4)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/2
+ description Host-S2 (PC5)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/3
+ description Host-S3 (PC6)
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+interface FastEthernet0/24
+ description Uplink to Router-JU-SL FastEthernet0/0
+ switchport mode access
+ spanning-tree portfast
+ no shutdown
+ exit
+
+end
+write memory
+

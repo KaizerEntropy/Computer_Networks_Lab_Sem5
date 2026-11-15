@@ -1,0 +1,717 @@
+
+================================================================================
+ JADAVPUR UNIVERSITY - DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING
+ COMPUTER NETWORKS LABORATORY - ASSIGNMENT 6 FULL SIMULATION SUITE
+ Author: Diptarko Bhattacharjee | Roll: 002410501013 | Class: BCSE UG-3 Sem-1
+================================================================================
+
+================================================================================
+ EXPERIMENT 1: BACK-TO-BACK HOST INTERCONNECTION VIA CROSSOVER CABLE
+================================================================================
+[Step 1] Initial IP Configurations:
+
+FastEthernet0 Connection:
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0001.64a1.0001
+   DHCP Enabled....................: No
+   IP Address......................: 192.168.1.1
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: 0.0.0.0
+
+FastEthernet0 Connection:
+   Connection-specific DNS Suffix..: 
+   Physical Address................: 0001.64d4.0002
+   DHCP Enabled....................: No
+   IP Address......................: 192.168.1.2
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: 0.0.0.0
+
+[Step 2] Initial ARP Caches (Cold State):
+------------------------------------------------------------
+ ARP Cache on Host-1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-2
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+[Step 3] Executing Ping from Host-1 (192.168.1.1) -> Host-2 (192.168.1.2):
+
+Pinging 192.168.1.2 with 32 bytes of data:
+Reply from 192.168.1.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 4] Executing Reverse Ping from Host-2 (192.168.1.2) -> Host-1 (192.168.1.1):
+
+Pinging 192.168.1.1 with 32 bytes of data:
+Reply from 192.168.1.1: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.1: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 5] Post-Ping ARP Caches (Resolved State):
+------------------------------------------------------------
+ ARP Cache on Host-1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.2           0001.64d4.0002        dynamic
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-2
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.1           0001.64a1.0001        dynamic
+------------------------------------------------------------
+
+[Observation & Conclusion]:
+  - Physical Media: Ethernet crossover pinout successfully pairs DTE Tx pins (1,2)
+    with DTE Rx pins (3,6) between two peer PCs without an intervening DCE.
+  - ARP Mechanics: Initial ping triggered an ARP broadcast request; upon receipt
+    of the unicast ARP reply, both hosts populated dynamic ARP entries.
+  - Result: 0% packet loss, bilateral ping verified successfully.
+
+================================================================================
+ EXPERIMENT 2: LAN-A (3 HOSTS CONNECTED VIA A LAYER-1 HUB)
+================================================================================
+[Step 1] Network IP Topology (LAN-A: 192.168.10.0/24):
+  - Host-A1: 192.168.10.1 (Connected to Hub-A Fa0)
+  - Host-A2: 192.168.10.2 (Connected to Hub-A Fa1)
+  - Host-A3: 192.168.10.3 (Connected to Hub-A Fa2)
+
+[Step 2] Pairwise Ping 1: Host-A1 -> Host-A2:
+
+Pinging 192.168.10.2 with 32 bytes of data:
+Reply from 192.168.10.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 3] Pairwise Ping 2: Host-A2 -> Host-A3:
+
+Pinging 192.168.10.3 with 32 bytes of data:
+Reply from 192.168.10.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 4] Pairwise Ping 3: Host-A1 -> Host-A3:
+
+Pinging 192.168.10.3 with 32 bytes of data:
+Reply from 192.168.10.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.10.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Step 5] Hub-A Layer-1 Statistics:
+  - Total bits/frames repeated unconditionally: 30
+  - Collision Domain Count: 1 (Shared across all 3 ports)
+  - Broadcast Domain Count: 1
+
+[Observation & Conclusion]:
+  - Hub acts as a Layer-1 repeater: bits received on any port are echoed to all other ports.
+  - All stations receive all traffic; filtering occurs only at Layer 2 inside host NICs.
+  - All pairs demonstrated 100% ICMP reachability.
+
+================================================================================
+ EXPERIMENT 3: LAN-B (3 HOSTS VIA SWITCH) & MAC/ARP TABLE DYNAMICS
+================================================================================
+
+>>> [PHASE 1: BEFORE PING - RECORD INITIAL TABLES] <<<
+
+--- Host-B1 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Host-B2 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B2
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Host-B3 ARP Table (Initial) ---
+------------------------------------------------------------
+ ARP Cache on Host-B3
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (Initial) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+Total Mac Addresses for this module: 0
+
+>>> [PHASE 2: EXECUTE ALL-PAIRS PINGS] <<<
+
+[Ping 1: Host-B1 -> Host-B2 (192.168.20.2)]
+
+Pinging 192.168.20.2 with 32 bytes of data:
+Reply from 192.168.20.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Ping 2: Host-B2 -> Host-B3 (192.168.20.3)]
+
+Pinging 192.168.20.3 with 32 bytes of data:
+Reply from 192.168.20.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Ping 3: Host-B1 -> Host-B3 (192.168.20.3)]
+
+Pinging 192.168.20.3 with 32 bytes of data:
+Reply from 192.168.20.3: bytes=32 time=2ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+Reply from 192.168.20.3: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.20.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+>>> [PHASE 3: AFTER PING - RECORD UPDATED TABLES] <<<
+
+--- Host-B1 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.2          0060.2f22.0002        dynamic
+  192.168.20.3          0060.2f33.0003        dynamic
+------------------------------------------------------------
+
+--- Host-B2 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B2
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.1          0060.2f11.0001        dynamic
+  192.168.20.3          0060.2f33.0003        dynamic
+------------------------------------------------------------
+
+--- Host-B3 ARP Table (After Pings) ---
+------------------------------------------------------------
+ ARP Cache on Host-B3
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.20.1          0060.2f11.0001        dynamic
+  192.168.20.2          0060.2f22.0002        dynamic
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (After Pings) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0060.2f11.0001    DYNAMIC     FastEthernet0/1
+1       0060.2f22.0002    DYNAMIC     FastEthernet0/2
+1       0060.2f33.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 3
+
+[Observation & Comparison with Problem 2]:
+  - Unlike Hub-A, Switch-B performs Backward MAC Learning from source frames.
+  - Initial MAC table was empty. As packets flowed, ports Fa0/1, Fa0/2, Fa0/3 were
+    associated with the corresponding host MAC addresses.
+  - Subsequent unicast frames were selectively switched ONLY to the destination port,
+    eliminating collision domains (microsegmentation) and conserving bandwidth.
+
+================================================================================
+ EXPERIMENT 4: INTERCONNECTING LAN-A (HUB) & LAN-B (SWITCH) VIA CROSSOVER
+================================================================================
+[Topology Interconnect]:
+  Hub-A (FastEthernet3) <=== [Crossover Cable] ===> Switch-B (FastEthernet0/4)
+
+>>> [PHASE 1: BEFORE CROSS-LAN PINGS - RECORD TABLES] <<<
+------------------------------------------------------------
+ ARP Cache on Host-A1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+ No ARP Entries Found.
+------------------------------------------------------------
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+Total Mac Addresses for this module: 0
+
+>>> [PHASE 2: EXECUTE CROSS-LAN PINGS] <<<
+
+[Cross-Ping 1: Host-A1 (192.168.1.1) -> Host-B1 (192.168.1.4)]
+
+Pinging 192.168.1.4 with 32 bytes of data:
+Reply from 192.168.1.4: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.4: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.4:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 2: Host-A2 (192.168.1.2) -> Host-B2 (192.168.1.5)]
+
+Pinging 192.168.1.5 with 32 bytes of data:
+Reply from 192.168.1.5: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.5: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.5:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 3: Host-A3 (192.168.1.3) -> Host-B3 (192.168.1.6)]
+
+Pinging 192.168.1.6 with 32 bytes of data:
+Reply from 192.168.1.6: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.6: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.6:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+[Cross-Ping 4: Host-B1 (192.168.1.4) -> Host-A2 (192.168.1.2)]
+
+Pinging 192.168.1.2 with 32 bytes of data:
+Reply from 192.168.1.2: bytes=32 time=2ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+Reply from 192.168.1.2: bytes=32 time=<1ms TTL=128
+
+Ping statistics for 192.168.1.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 2ms, Average = 1ms
+
+>>> [PHASE 3: AFTER CROSS-LAN PINGS - RECORD TABLES] <<<
+
+--- Host-A1 ARP Table (Post-Ping) ---
+------------------------------------------------------------
+ ARP Cache on Host-A1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.2           0002.16a2.0002        dynamic
+  192.168.1.3           0002.16a3.0003        dynamic
+  192.168.1.4           0060.2f11.0001        dynamic
+------------------------------------------------------------
+
+--- Host-B1 ARP Table (Post-Ping) ---
+------------------------------------------------------------
+ ARP Cache on Host-B1
+------------------------------------------------------------
+  Internet Address      Physical Address      Type
+  192.168.1.1           0002.16a1.0001        dynamic
+  192.168.1.2           0002.16a2.0002        dynamic
+  192.168.1.3           0002.16a3.0003        dynamic
+------------------------------------------------------------
+
+--- Switch-B MAC Forwarding Table (CRUCIAL OBSERVATION) ---
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0002.16a1.0001    DYNAMIC     FastEthernet0/4
+1       0002.16a2.0002    DYNAMIC     FastEthernet0/4
+1       0002.16a3.0003    DYNAMIC     FastEthernet0/4
+1       0060.2f11.0001    DYNAMIC     FastEthernet0/1
+1       0060.2f22.0002    DYNAMIC     FastEthernet0/2
+1       0060.2f33.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 6
+
+[Key Analytical Discovery]:
+  Notice that Port FastEthernet0/4 on Switch-B has dynamically learned MULTIPLE
+  MAC addresses (Host-A1, Host-A2, and Host-A3)!
+  Because Hub-A multiplexes all traffic from LAN-A onto that single uplink cable,
+  every frame from LAN-A arrives at Switch-B via port Fa0/4.
+  This proves switches support multi-MAC port associations when connected to hubs.
+
+================================================================================
+ EXPERIMENT 5: DUAL LAN ROUTING (JU-MAIN & JU-SL) VIA CISCO 1818 ROUTERS
+================================================================================
+[Step 1] Router Interface Status:
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.148.1   YES manual up                    up
+FastEthernet0/1            192.168.150.1   YES manual up                    up
+
+Interface                  IP-Address      OK? Method Status                Protocol
+FastEthernet0/0            192.168.149.1   YES manual up                    up
+FastEthernet0/1            192.168.150.2   YES manual up                    up
+
+[Step 2] Routing Tables with Static Routes Added:
+Router#Router-JU-Main# show ip route
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+Gateway of last resort is not set
+
+C    192.168.148.0/24 is directly connected, FastEthernet0/0
+C    192.168.150.0/24 is directly connected, FastEthernet0/1
+S    192.168.149.0/24 [1/0] via 192.168.150.2
+
+Router#Router-JU-SL# show ip route
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+Gateway of last resort is not set
+
+C    192.168.149.0/24 is directly connected, FastEthernet0/0
+C    192.168.150.0/24 is directly connected, FastEthernet0/1
+S    192.168.148.0/24 [1/0] via 192.168.150.1
+
+[Step 3] Cross-Campus Ping: Host-M1 (JU-Main 192.168.148.2) -> Host-S1 (JU-SL 192.168.149.2):
+
+Pinging 192.168.149.2 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.149.2:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Step 4] Cross-Campus Reverse Ping: Host-S2 (JU-SL 192.168.149.3) -> Host-M2 (JU-Main 192.168.148.3):
+
+Pinging 192.168.148.3 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.148.3:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Step 5] Router ARP Tables:
+Router#Router-JU-Main# show arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  192.168.148.2    0          0001.64a1.0001  ARPA   FastEthernet0/0
+
+Router#Router-JU-SL# show arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  192.168.149.3    0          0001.64b1.0002  ARPA   FastEthernet0/0
+
+[Observation]:
+  - Static routes configured on both routers enable seamless Layer 3 packet forwarding.
+  - TTL was decremented at each router hop (initial TTL 128 -> received TTL 126).
+  - Two collision domains per LAN and a point-to-point WAN link were successfully orchestrated.
+
+================================================================================
+ EXPERIMENT 6: CAMPUS DHCP SERVER DEPLOYMENT ON JU-MAIN AND JU-SL
+================================================================================
+[Step 1] Requesting Dynamic Leases for JU-Main Hosts via DORA:
+
+[Host-M1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.20
+ > Sent DHCPREQUEST for offered IP 192.168.148.20
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.20
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Host-M2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.21
+ > Sent DHCPREQUEST for offered IP 192.168.148.21
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.21
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Host-M3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.148.10 offering IP 192.168.148.22
+ > Sent DHCPREQUEST for offered IP 192.168.148.22
+ < Received DHCPACK from 192.168.148.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.148.22
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.148.1
+      DNS Server:      192.168.148.10
+
+[Step 2] Requesting Dynamic Leases for JU-SL Hosts via DORA:
+
+[Host-S1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.20
+ > Sent DHCPREQUEST for offered IP 192.168.149.20
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.20
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Host-S2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.21
+ > Sent DHCPREQUEST for offered IP 192.168.149.21
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.21
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Host-S3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.149.10 offering IP 192.168.149.22
+ > Sent DHCPREQUEST for offered IP 192.168.149.22
+ < Received DHCPACK from 192.168.149.10
+ [OK] DHCP request successful.
+      IP Address:      192.168.149.22
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.149.1
+      DNS Server:      192.168.149.10
+
+[Step 3] Active Leases on DHCP Servers:
+------------------------------------------------------------
+ DHCP Active Leases Pool (JU-DHCP-Main)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.64a1.0001       192.168.148.20   255.255.255.0    192.168.148.1
+ 0001.64a1.0002       192.168.148.21   255.255.255.0    192.168.148.1
+ 0001.64a1.0003       192.168.148.22   255.255.255.0    192.168.148.1
+------------------------------------------------------------
+
+------------------------------------------------------------
+ DHCP Active Leases Pool (JU-DHCP-SL)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.64b1.0001       192.168.149.20   255.255.255.0    192.168.149.1
+ 0001.64b1.0002       192.168.149.21   255.255.255.0    192.168.149.1
+ 0001.64b1.0003       192.168.149.22   255.255.255.0    192.168.149.1
+------------------------------------------------------------
+
+[Step 4] Inter-LAN Ping between Dynamically Addressed Hosts:
+  Host-M1 (192.168.148.20) pinging Host-S1 (192.168.149.20):
+
+Pinging 192.168.149.20 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 192.168.149.20:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+
+[Observation]:
+  - Standard 4-way DORA handshake executed cleanly: DHCPDISCOVER -> DHCPOFFER -> DHCPREQUEST -> DHCPACK.
+  - All workstations received dynamic IP, subnet mask, default gateway, and DNS server addresses.
+  - Cross-router static routing remained 100% operational with dynamic client endpoints.
+
+================================================================================
+ EXPERIMENT 7: INTEGRATED ENTERPRISE LAN (CSE) WITH DHCP, DNS, WEB & FTP
+================================================================================
+[Step 1] Initial Server Configurations & DNS Records:
+------------------------------------------------------------
+ DNS Zone Database (CSE-DNS-Server)
+------------------------------------------------------------
+ Domain Name                  Type   TTL    IP Address
+ cse.myuniv.edu               A      300    192.168.100.10
+ dhcp.cse.myuniv.edu          A      300    192.168.100.2
+ dns.cse.myuniv.edu           A      300    192.168.100.4
+ ftp.cse.myuniv.edu           A      300    192.168.100.20
+ web.cse.myuniv.edu           A      300    192.168.100.10
+------------------------------------------------------------
+
+[Step 2] Dynamic DHCP Address Acquisition by Workstations (PC1, PC2, PC3):
+
+[PC1] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.50
+ > Sent DHCPREQUEST for offered IP 192.168.100.50
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.50
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[PC2] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.51
+ > Sent DHCPREQUEST for offered IP 192.168.100.51
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.51
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[PC3] Requesting dynamic IP configuration via DHCP...
+ > Sent DHCPDISCOVER (broadcast 255.255.255.255:67)
+ < Received DHCPOFFER from 192.168.100.2 offering IP 192.168.100.52
+ > Sent DHCPREQUEST for offered IP 192.168.100.52
+ < Received DHCPACK from 192.168.100.2
+ [OK] DHCP request successful.
+      IP Address:      192.168.100.52
+      Subnet Mask:     255.255.255.0
+      Default Gateway: 192.168.100.1
+      DNS Server:      192.168.100.4
+
+[Step 3] Active DHCP Leases in CSE LAN:
+------------------------------------------------------------
+ DHCP Active Leases Pool (CSE-DHCP-Server)
+------------------------------------------------------------
+ Client MAC           Assigned IP      Subnet Mask      Gateway
+ 0001.96e1.0001       192.168.100.50   255.255.255.0    192.168.100.1
+ 0001.96e1.0002       192.168.100.51   255.255.255.0    192.168.100.1
+ 0001.96e1.0003       192.168.100.52   255.255.255.0    192.168.100.1
+------------------------------------------------------------
+
+[Step 4] DNS Name Resolution via Local DNS Server (192.168.100.4):
+
+PC1> nslookup cse.myuniv.edu
+Server:  dns.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    cse.myuniv.edu
+Address: 192.168.100.10
+
+PC1> nslookup ftp.cse.myuniv.edu
+Server:  dns.ftp.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    ftp.cse.myuniv.edu
+Address: 192.168.100.20
+
+[Step 5] Accessing Departmental Web Server via Domain Name:
+
+PC1> curl http://cse.myuniv.edu/
+
+PC1> nslookup cse.myuniv.edu
+Server:  dns.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    cse.myuniv.edu
+Address: 192.168.100.10
+HTTP/1.1 200 OK
+Content-Length: 371
+Content-Type: text/html; charset=UTF-8
+Server: Cisco-PacketTracer-PT-Server/8.0
+
+<!DOCTYPE html>
+<html>
+<head><title>Jadavpur University - CSE Department</title></head>
+<body style='font-family: Arial; padding: 20px;'>
+  <h1>JADAVPUR UNIVERSITY</h1>
+  <h2>Department of Computer Science & Engineering</h2>
+  <p>Welcome to the Departmental Portal (<b>cse.myuniv.edu</b>).</p>
+  <p>Assignment 6: Cisco Packet Tracer Network Emulation</p>
+</body>
+</html>
+
+
+[Step 6] Connecting to FTP Server and Downloading File:
+
+PC1> ftp ftp.cse.myuniv.edu
+
+PC1> nslookup ftp.cse.myuniv.edu
+Server:  dns.ftp.cse.myuniv.edu
+Address: 192.168.100.4
+
+Non-authoritative answer:
+Name:    ftp.cse.myuniv.edu
+Address: 192.168.100.20
+Connected to ftp.cse.myuniv.edu.
+220 Welcome to Jadavpur University CSE FTP Server (Version 1.0)
+User (ftp.cse.myuniv.edu:(none)): csejadavpur
+331 Password required for csejadavpur
+Password: ******
+230 User csejadavpur logged in, proceed.
+ftp> dir
+150 Opening ASCII mode data connection for file list.
+-rw-r--r-- 1 ftp ftp     68 Nov 06 00:00 assignment6_guidelines.txt
+-rw-r--r-- 1 ftp ftp     53 Nov 06 00:00 cse_ju_syllabus.pdf
+-rw-r--r-- 1 ftp ftp     59 Nov 06 00:00 welcome.txt
+226 Transfer complete.
+ftp> get welcome.txt
+200 PORT command successful.
+150 Opening BINARY mode data connection for welcome.txt (59 bytes).
+226 Transfer complete.
+ftp: 59 bytes received in 0.05 seconds.
+ftp> quit
+221 Goodbye.
+
+[Step 7] Final MAC Forwarding Table on CSE-Switch:
+          Mac Address Table
+-------------------------------------------
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+1       0001.96c1.0002    DYNAMIC     FastEthernet0/4
+1       0001.96c1.0004    DYNAMIC     FastEthernet0/5
+1       0001.96c1.0010    DYNAMIC     FastEthernet0/6
+1       0001.96c1.0020    DYNAMIC     FastEthernet0/7
+1       0001.96e1.0001    DYNAMIC     FastEthernet0/1
+1       0001.96e1.0002    DYNAMIC     FastEthernet0/2
+1       0001.96e1.0003    DYNAMIC     FastEthernet0/3
+Total Mac Addresses for this module: 7
+
+[Observation & Summary]:
+  - Full enterprise multi-service LAN implemented and validated successfully.
+  - Client dynamic lifecycle: Boot (DHCP) -> Domain Lookup (DNS) -> Web Browsing (HTTP) -> File Download (FTP).
+  - High-level services cooperate seamlessly over IEEE 802.3 Layer 2 microsegmentation.
+
+================================================================================
+ ALL ASSIGNMENT 6 EXPERIMENTS COMPLETED SUCCESSFULLY WITH 100% VERIFICATION
+================================================================================

@@ -1,0 +1,64 @@
+! ================================================================================
+! CISCO IOS ROUTER CONFIGURATION: JU-SL-Router (Cisco 1818 / 1841)
+! LAN: JU-SL (192.168.149.0/24) | WAN: 192.168.150.0/24
+! ================================================================================
+
+enable
+configure terminal
+hostname Router-JU-SL
+
+! ------------------------------------------------------------------------------
+! 1. LAN INTERFACE CONFIGURATION (Connects to PC-LAB2-Switch via Straight-Through)
+! ------------------------------------------------------------------------------
+interface FastEthernet0/0
+ description LAN Interface for JU-SL (Salt Lake Campus)
+ ip address 192.168.149.1 255.255.255.0
+ duplex auto
+ speed auto
+ no shutdown
+ exit
+
+! ------------------------------------------------------------------------------
+! 2. WAN INTERFACE CONFIGURATION (Connects to Router-JU-Main)
+! ------------------------------------------------------------------------------
+interface FastEthernet0/1
+ description WAN Point-to-Point Link to Router-JU-Main
+ ip address 192.168.150.2 255.255.255.0
+ duplex full
+ speed 100
+ no shutdown
+ exit
+
+! Optional Serial configuration if WIC-2T is used:
+! interface Serial0/0/0
+!  description Serial WAN Link to JU-Main
+!  ip address 192.168.150.2 255.255.255.0
+!  no shutdown
+!  exit
+
+! ------------------------------------------------------------------------------
+! 3. STATIC ROUTING CONFIGURATION
+! Route traffic destined to JU-Main (192.168.148.0/24) via Router-JU-Main (192.168.150.1)
+! ------------------------------------------------------------------------------
+ip route 192.168.148.0 255.255.255.0 192.168.150.1
+
+end
+write memory
+
+! ------------------------------------------------------------------------------
+! 4. VERIFICATION COMMANDS
+! ------------------------------------------------------------------------------
+! Router-JU-SL# show ip interface brief
+! Interface                  IP-Address      OK? Method Status                Protocol
+! FastEthernet0/0            192.168.149.1   YES manual up                    up
+! FastEthernet0/1            192.168.150.2   YES manual up                    up
+!
+! Router-JU-SL# show ip route
+! Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+! Gateway of last resort is not set
+!
+! S    192.168.148.0/24 [1/0] via 192.168.150.1
+! C    192.168.149.0/24 is directly connected, FastEthernet0/0
+! C    192.168.150.0/24 is directly connected, FastEthernet0/1
+! ================================================================================
+
