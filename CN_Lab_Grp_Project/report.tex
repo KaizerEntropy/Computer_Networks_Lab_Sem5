@@ -6,13 +6,18 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{booktabs}
+\usepackage{tabularx}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{tikz}
 \usepackage{placeins}
 \usepackage{float}
 
+\usetikzlibrary{shapes.geometric, arrows, positioning, calc, fit, backgrounds, decorations.pathreplacing}
+
 \geometry{margin=1in}
 
+% Hyperref setup
 \hypersetup{
     colorlinks=true,
     linkcolor=blue!70!black,
@@ -20,10 +25,12 @@
     urlcolor=blue!70!black
 }
 
+% Code snippet styling
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{backcolour}{rgb}{0.96,0.96,0.94}
+\definecolor{codeblue}{rgb}{0.13,0.13,1}
 
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
@@ -43,319 +50,1345 @@
     showtabs=false,                  
     tabsize=2
 }
-
+\lstdefinestyle{termstyle}{
+    backgroundcolor=\color{backcolour},
+    basicstyle=\ttfamily\scriptsize,
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{black!30},
+    numbers=none,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=2,
+    xleftmargin=4pt,
+    xrightmargin=4pt
+}
 \lstset{style=mystyle}
 
 \begin{document}
 
-% ==============================================================================
+% -------------------------------------------------------------
 % TITLE PAGE
-% ==============================================================================
+% -------------------------------------------------------------
 \begin{titlepage}
     \centering
-    \vspace*{0.5cm}
+    \vspace*{1.2cm}
+
+    {\huge \textbf{JADAVPUR UNIVERSITY}}\\[0.35cm]
+    {\Large \textbf{Department of Computer Science \& Engineering}}\\[0.2cm]
+    {\large \textbf{Faculty of Engineering \& Technology}}\\[1.5cm]
     
-    \includegraphics[width=0.22\textwidth]{Jadavpur_University_Logo.svg.png}\\[1cm]
+    {\huge \textbf{LABORATORY REPORT}}\\[0.5cm]
+    {\LARGE \textbf{Mini Group Project: Multi-Layer Protocol Implementation}}\\[0.3cm]
+    {\large \textbf{End-to-End Simulation of BOOTP, DHCP (DORA), and TELNET}}\\[0.2cm]
+    {\normalsize \textit{Integrated with 7-Scheme Error Detection, Channel Impairments,}}\\[0.1cm]
+    {\normalsize \textit{Stop-and-Wait ARQ Flow Control, and Distributed POSIX Sockets}}\\[1.2cm]
     
-    {\LARGE \textbf{Jadavpur University}}\\[0.3cm]
-    {\large Department of Computer Science \& Engineering}\\[0.2cm]
-    {\large Faculty of Engineering \& Technology}\\[1.2cm]
-    
-    {\LARGE \textbf{Computer Networks Laboratory}}\\[0.2cm]
-    {\large \textbf{Course Code: CSE/PC/B/S/314}}\\[0.8cm]
-    
-    \rule{\linewidth}{0.5mm}\\[0.4cm]
-    {\Large \textbf{Mini Group Project Report}}\\[0.3cm]
-    {\large \textbf{End-to-End Multi-Layer Protocol Simulation:}}\\[0.2cm]
-    {\large \textbf{BOOTP, DHCP (DORA), and TELNET (RFC 854)}}\\[0.2cm]
-    {\small \textit{with Comprehensive Error Detection (Checksum, CRC-8/10/16/32, Hamming, 2D-Parity),}}\\[0.1cm]
-    {\small \textit{Channel Impairment Modeling, Stop-and-Wait ARQ, and Cross-Device Socket Execution}}\\[0.3cm]
-    \rule{\linewidth}{0.5mm}\\[1.2cm]
-    
-    \begin{minipage}{0.48\textwidth}
-        \begin{flushleft} \large
-            \textbf{Submitted By:}\\
-            Diptarko Bhattacharjee\\
-            Class Roll: 002310501017\\
-            Examination Roll: M4CSE25017\\
-            5th Semester, B.C.S.E.\\
-            Group Project
-        \end{flushleft}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.48\textwidth}
-        \begin{flushright} \large
-            \textbf{Instructor:}\\
-            Prof. Sarbani Roy\\
-            Dept. of Computer Science \& Engg.\\
-            Jadavpur University
-        \end{flushright}
-    \end{minipage}
-    
+    {\large
+    \textbf{Subject:} Computer Networks Laboratory (CSE/PC/B/S/314)\\[0.25cm]
+    \textbf{Class:} B.C.S.E. -- UG 3 -- Sem 1 -- Section A1\\[0.25cm]
+    \textbf{Protocols:} BOOTP, DHCP, TELNET\\[1.0cm]
+    }
+
+    {\Large \textbf{Group Members:}}\\[0.4cm]
+    \begin{table}[H]
+    \centering
+    \large
+    \begin{tabular}{c@{\hspace{2.5cm}}c}
+        \toprule
+        \textbf{Aritra Roy} & \textbf{Chitrak Betal} \\
+        \normalsize Roll No: 002410501003 & \normalsize Roll No: 002410501005 \\[0.25cm]
+        \textbf{Mukut Chatterjee} & \textbf{Diptarko Bhattacharjee} \\
+        \normalsize Roll No: 002410501007 & \normalsize Roll No: 002410501013 \\
+        \bottomrule
+    \end{tabular}
+    \end{table}
+
     \vfill
     {\large November 2026}
 \end{titlepage}
 
 \newpage
+\vspace*{-1cm}
 \tableofcontents
+\vspace*{-1cm}
 \newpage
 
-% ==============================================================================
-% 1. INTRODUCTION & PROBLEM SPECIFICATION
-% ==============================================================================
-\section{Introduction \& Problem Specification}
+\title{\textbf{Mini Group Project: Design, Implementation, and Empirical Analysis of a Multi-Layer Protocol Architecture (BOOTP, DHCP, TELNET) with Flow Control and Error Resiliency}}
+\author{
+  \begin{tabular}{c@{\hspace{2.2cm}}c}
+    \textbf{Aritra Roy} & \textbf{Chitrak Betal} \\
+    {\small Roll No: 002410501003} & {\small Roll No: 002410501005} \\[0.25cm]
+    \textbf{Mukut Chatterjee} & \textbf{Diptarko Bhattacharjee} \\
+    {\small Roll No: 002410501007} & {\small Roll No: 002410501013}
+  \end{tabular}
+}
+\date{}
+\maketitle
 
-Modern network communication involves complex cross-layer interactions spanning network bootstrap, host configuration, transport reliability, and interactive remote application sessions. 
+% =============================================================
+% SECTION 1: INTRODUCTION
+% =============================================================
+\section{Introduction}
 
-The objective of this Mini Group Project is to implement a robust, modular, and realistic network simulation selecting one protocol from each of the three assigned baskets:
-\begin{itemize}
-    \item \textbf{Basket 1 (Network Bootstrap Protocol)}: \textbf{BOOTP} (Bootstrap Protocol, RFC 951 / RFC 1048 / RFC 1542) over UDP socket.
-    \item \textbf{Basket 2 (Host Configuration Protocol)}: \textbf{DHCP} (Dynamic Host Configuration Protocol, RFC 2131 / RFC 2132) over UDP socket.
-    \item \textbf{Basket 3 (Application Layer Protocol)}: \textbf{TELNET} (Telecommunications Network Protocol, RFC 854 / RFC 855) over TCP socket.
-\end{itemize}
+Modern computer networks operate as a coordinated hierarchy of protocol abstractions. From the instant a physical workstation powers on without persistent storage, through its acquisition of dynamic configuration parameters on a local area network, to its engagement in interactive, reliable application sessions across remote hosts, a sequence of interdependent protocols must operate without failure.
 
-\subsection{Key Design Requirements}
-The implementation incorporates and elevates all theoretical concepts explored in earlier lab assignments:
+The objective of this Mini Group Project is to design, implement, rigorously test, and benchmark an authentic, end-to-end multi-layer network protocol simulation selecting strictly one protocol from each of the three assigned baskets:
 \begin{enumerate}
-    \item \textbf{Protocol Strictness}: The simulation strictly uses BOOTP, DHCP, and TELNET as specified.
-    \item \textbf{Sequential Cross-Layer Workflow}: A diskless client begins with hardware MAC identity, performs BOOTP bootstrapping to identify initial server and boot file parameters, executes the complete 4-way DHCP DORA (Discover, Offer, Request, Ack) handshake for dynamic IP leasing, and finally initiates an authenticated interactive TELNET application session over TCP.
-    \item \textbf{Exhaustive Error Detection Matrix}: Integration of all error checking schemes from prior assignments: 16-bit One's Complement Internet Checksum, CRC-8, CRC-10, CRC-16, CRC-32 (IEEE 802.3 Ethernet), Extended Hamming SEC-DED code, and Two-Dimensional Parity (LRC+VRC).
-    \item \textbf{Algorithmic Error Injection \& Blind Spots}: Systematic injection of single-bit, two-isolated, odd-bit, burst, Checksum-blind, and CRC-blind error patterns to mathematically demonstrate detection limits.
-    \item \textbf{Channel Impairment Modeling \& Flow Control}: Probabilistic packet loss, bit corruption, latency/jitter exceeding socket timeouts, ACK loss, and Stop-and-Wait ARQ retransmissions.
-    \item \textbf{Cross-Device Distributed Execution}: Standard POSIX socket architecture allowing execution across separate physical laptops/PCs over LAN or local loopback.
-    \item \textbf{Bit-Exact Reconstruction \& Verification}: End-to-end payload integrity verification comparing input files with server-reconstructed files.
+    \item \textbf{Basket 1 (Network Bootstrap Protocol)}: \textbf{BOOTP} (Bootstrap Protocol, RFC 951 / RFC 1048 / RFC 1542) over UDP socket communication.
+    \item \textbf{Basket 2 (Host Configuration Protocol)}: \textbf{DHCP} (Dynamic Host Configuration Protocol, RFC 2131 / RFC 2132) utilizing the 4-way DORA handshake over UDP socket communication.
+    \item \textbf{Basket 3 (Application Layer Protocol)}: \textbf{TELNET} (Network Virtual Terminal Protocol, RFC 854 / RFC 855) over TCP socket communication.
 \end{enumerate}
 
-% ==============================================================================
-% 2. PROTOCOL ARCHITECTURE & SPECIFICATIONS
-% ==============================================================================
-\section{Protocol Architecture \& Specifications}
-
-\subsection{BOOTP (Bootstrap Protocol — RFC 951, RFC 1048)}
-BOOTP operates over UDP (server port 6767, client port 6868). It is designed for diskless workstations to obtain their IP address, boot server IP, and boot file path. The packet has a standard fixed 236-byte header followed by a 64-byte vendor field:
+\subsection{Synthesizing Prior Laboratory Foundations}
+Rather than treating these protocols as disconnected academic exercises, this project directly synthesizes and elevates the core achievements of all preceding laboratory assignments:
 \begin{itemize}
-    \item \texttt{op}: 1 (\texttt{BOOTREQUEST}) or 2 (\texttt{BOOTREPLY}).
-    \item \texttt{htype} / \texttt{hlen}: 1 (Ethernet) / 6 (MAC length).
-    \item \texttt{xid}: 32-bit transaction identifier matching requests and replies.
-    \item \texttt{ciaddr}, \texttt{yiaddr}, \texttt{siaddr}, \texttt{giaddr}: Client IP, Your IP, Server IP, Gateway IP.
-    \item \texttt{chaddr[16]}: Client hardware address (Ethernet MAC padded with zeroes).
-    \item \texttt{sname[64]} / \texttt{file[128]}: Server host name and boot file path (\texttt{pxelinux.0}).
-    \item \texttt{vend[64]}: RFC 1048 vendor area prefixed by the 4-byte Magic Cookie (\texttt{99.130.83.99}) followed by TLV options (Subnet Mask, Default Gateway, DNS Server).
+    \item \textbf{Error Detection Integrity (Assignment 1)}: We embed seven distinct mathematical Frame Check Sequence (FCS) algorithms across every transmitted frame: 16-bit Internet Checksum (RFC 1071), CRC-8, CRC-10, CRC-16, CRC-32 (IEEE 802.3 Ethernet), Extended Hamming Single Error Correction / Double Error Detection (SEC-DED), and Two-Dimensional Parity (LRC+VRC).
+    \item \textbf{Deterministic Error Injection \& Blind Spots (Assignment 1)}: We subject transmissions to seven deterministic error classes (single-bit, two-isolated, odd-bits, 8-bit burst, Checksum-blind balanced word modification, CRC-blind polynomial multiple errors, and random byte noise) to prove mathematical detection boundaries and blind spots.
+    \item \textbf{Channel Impairments \& Flow Control (Assignment 2)}: We introduce a physical channel simulation module that probabilistically drops frames ($p_{\text{loss}}$), inverts bits ($p_{\text{error}}$), injects artificial delay and inter-arrival jitter ($p_{\text{delay}}$), and drops reverse acknowledgments ($p_{\text{ack\_loss}}$). Reliability is enforced via Stop-and-Wait Automatic Repeat reQuest (ARQ) with microsecond timers.
+    \item \textbf{State Machine \& Channel Coordination (Assignment 3)}: We model protocol state machines (such as DHCP client states: \texttt{INIT}, \texttt{SELECTING}, \texttt{REQUESTING}, \texttt{BOUND}, and \texttt{RELEASING}) with event-driven coordination.
+    \item \textbf{Distributed POSIX Socket Programming (Assignment 4)}: All communications utilize true operating system POSIX sockets bound to \texttt{0.0.0.0}, enabling seamless execution across separate physical computers over Ethernet or Wi-Fi.
 \end{itemize}
 
-\subsection{DHCP (Dynamic Host Configuration Protocol — RFC 2131, RFC 2132)}
-DHCP extends BOOTP with dynamic IP leasing and automatic pool management. The interaction follows the classic 4-way DORA sequence:
+% =============================================================
+% SECTION 2: THEORETICAL ANALYSIS & PROTOCOL SPECIFICATIONS
+% =============================================================
+\section{Theoretical Analysis \& Protocol Specifications}
+
+\subsection{BOOTP: Bootstrap Protocol (RFC 951, RFC 1048)}
+The Bootstrap Protocol (BOOTP) was introduced by Bill Croft and John Gilmore in RFC 951 (September 1985) as an IP/UDP-based replacement for the older Reverse Address Resolution Protocol (RARP, RFC 903). RARP operated strictly at the Data Link layer, requiring direct kernel access and incapable of passing through IP routers. BOOTP revolutionized host bootstrapping by encapsulating all configuration requests inside standard UDP/IP datagrams, allowing diskless network appliances and workstations to boot across complex routed networks.
+
+\subsubsection{Operational Motivation \& Diskless Client Architecture}
+A diskless workstation (such as Sun Microsystems or DEC VAX stations) contains no internal disk storage or non-volatile filesystem. Upon power-on, the machine's read-only memory (ROM / BIOS) initializes the network interface controller (NIC) and reads its burned-in 48-bit IEEE 802.3 Ethernet MAC address. At this instant, the workstation knows nothing about its logical network identity: it possesses no IP address, no subnet mask, no default gateway, no domain name server, and no operating system kernel image. 
+
+BOOTP resolves this fundamental dependency loop by enabling the diskless host to:
 \begin{enumerate}
-    \item \textbf{DHCPDISCOVER}: Client broadcasts to locate DHCP servers, requesting network configuration parameters.
-    \item \textbf{DHCPOFFER}: Server reserves an IP address from its pool and unicasts an offer with lease duration (7200 s), renewal timer $T_1$ (3600 s), rebinding timer $T_2$ (6300 s), subnet mask (\texttt{255.255.255.0}), default gateway, and DNS server.
-    \item \textbf{DHCPREQUEST}: Client confirms the offer and requests formal commitment.
-    \item \textbf{DHCPACK}: Server commits the MAC-to-IP binding in its active lease database and sends final confirmation.
-    \item \textbf{DHCPRELEASE}: Client gracefully releases the leased IP upon session completion.
+    \item Discover its own assigned 32-bit IPv4 address.
+    \item Identify the IP address of a network boot server hosting bootable disk images.
+    \item Obtain the exact file path string of the bootloader image file (e.g., \texttt{pxelinux.0} or kernel binary) to retrieve via TFTP (Trivial File Transfer Protocol).
+    \item Extract vital local network parameters (subnet mask, default gateway, DNS server).
 \end{enumerate}
 
-\subsection{TELNET (Network Virtual Terminal — RFC 854, RFC 855)}
-TELNET runs over TCP (port 2323). It establishes a bi-directional 8-bit byte stream with option negotiation:
+\subsubsection{Dual-Port UDP Architecture}
+Unlike typical client-server protocols where the server binds to a well-known port ($<1024$) and the client dynamically allocates an ephemeral port ($>1024$), BOOTP assigns fixed, well-known port numbers to \textbf{both} endpoints:
 \begin{itemize}
-    \item \textbf{Command Escaping}: The byte \texttt{0xFF} (\texttt{IAC} — Interpret As Command) introduces commands. Literal \texttt{0xFF} bytes are doubled (\texttt{IAC IAC}).
-    \item \textbf{Negotiation Primitives}: \texttt{WILL}, \texttt{WONT}, \texttt{DO}, \texttt{DONT} negotiate features such as Echo (\texttt{TELOPT\_ECHO}, 1), Suppress Go Ahead (\texttt{TELOPT\_SGA}, 3), and Terminal Type (\texttt{TELOPT\_TTYPE}, 24).
-    \item \textbf{Remote Shell Engine}: Supports remote execution of commands including \texttt{help}, \texttt{network\_info} (querying active BOOTP and DHCP leases), \texttt{status}, \texttt{calc}, \texttt{ping}, \texttt{upload}, and \texttt{exit}.
-    \item \textbf{Payload Framing}: File streams transmitted across Telnet are framed with transport envelopes containing sequence numbers, length fields, and Frame Check Sequences (FCS) for error checking and ARQ recovery.
+    \item \textbf{BOOTP Server Daemon}: Listens on UDP port \texttt{67} (\texttt{bootps}).
+    \item \textbf{BOOTP Client Host}: Listens on UDP port \texttt{68} (\texttt{bootpc}).
 \end{itemize}
+This dual fixed-port design is a strict architectural necessity: because the booting client does not yet have an IP address, its operating system cannot dynamically allocate an ephemeral port or bind incoming traffic to an arbitrary socket descriptor. By fixing the client destination port to \texttt{68}, the server daemon can transmit the \texttt{BOOTREPLY} either as a local subnet broadcast or directly to port \texttt{68} matching the client's physical MAC address. In our simulation environment, to avoid root permission conflicts with system daemons, these ports are safely mapped to \texttt{6767} (BOOTP server) and \texttt{6768} (BOOTP client).
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\linewidth]{plots/fig1_protocol_stack_flow.png}
-    \caption{End-to-End Protocol Flow: Sequential Execution of BOOTP, DHCP DORA, and TELNET.}
-    \label{fig:protocol_stack}
-\end{figure}
-
-% ==============================================================================
-% 3. ERROR DETECTION SCHEMES & MATHEMATICAL BLIND SPOTS
-% ==============================================================================
-\section{Error Detection Schemes \& Mathematical Proofs}
-
-\subsection{Implemented Detection Schemes}
-The framework implements seven distinct error detection algorithms:
-\begin{enumerate}
-    \item \textbf{16-bit Internet Checksum (RFC 1071)}: Computes the bitwise complement of the one's complement sum of 16-bit words:
-    \begin{equation}
-        \text{Checksum} = \sim \left( \sum_{i=1}^{M} W_i \pmod{2^{16} - 1} \right)
-    \end{equation}
-    \item \textbf{Cyclic Redundancy Checks (CRC-8, CRC-10, CRC-16, CRC-32)}: Evaluates polynomial division in $\text{GF}(2)$:
-    \begin{equation}
-        T(x) = M(x) \cdot x^r + R(x), \quad R(x) = [M(x) \cdot x^r] \pmod{G(x)}
-    \end{equation}
-    where $G(x)$ is the generator polynomial:
-    \begin{itemize}
-        \item CRC-8: $G(x) = x^8 + x^7 + x^6 + x^4 + x^2 + 1$ (\texttt{0xD5})
-        \item CRC-10: $G(x) = x^{10} + x^9 + x^5 + x^4 + x + 1$ (\texttt{0x233})
-        \item CRC-16: $G(x) = x^{16} + x^{15} + x^2 + 1$ (\texttt{0x8005})
-        \item CRC-32 (IEEE 802.3): $G(x) = x^{32} + x^{26} + x^{23} + \dots + 1$ (\texttt{0x04C11DB7})
-    \end{itemize}
-    \item \textbf{Extended Hamming SEC-DED}: Multi-block parity syndrome matrix detecting single and double bit alterations.
-    \item \textbf{Two-Dimensional Parity (LRC+VRC)}: Longitudinal Redundancy Check (XOR across bytes) coupled with Vertical Redundancy Check (even parity bit per byte).
-\end{enumerate}
-
-\subsection{Mathematical Blind Spot Proofs}
-\paragraph{Case 1: Checksum Blind Spot}
-Suppose two consecutive 16-bit words $W_1$ and $W_2$ undergo balanced modifications:
-\begin{equation}
-    W_1' = W_1 + \delta, \quad W_2' = W_2 - \delta
-\end{equation}
-The sum remains unchanged:
-\begin{equation}
-    W_1' + W_2' = (W_1 + \delta) + (W_2 - \delta) = W_1 + W_2
-\end{equation}
-Hence, $\text{Checksum}(M') = \text{Checksum}(M)$. The 16-bit Checksum fails to detect this error ($0\%$ detection rate). However, in $\text{GF}(2)$ polynomial arithmetic, additions do not cancel because $W_1' \oplus W_2' \neq W_1 \oplus W_2$. Thus, CRC-32 catches $100\%$ of these errors.
-
-\paragraph{Case 2: CRC Blind Spot}
-Let $E(x)$ be an error polynomial that is an exact multiple of the generator polynomial $G(x)$, i.e., $E(x) = Q(x) \cdot G(x)$. The received message polynomial is:
-\begin{equation}
-    T'(x) = T(x) \oplus E(x)
-\end{equation}
-Computing the CRC remainder at the receiver:
-\begin{equation}
-    R'(x) = T'(x) \pmod{G(x)} = [T(x) \pmod{G(x)}] \oplus [E(x) \pmod{G(x)}] = 0 \oplus 0 = 0
-\end{equation}
-The CRC remainder is zero, rendering the error completely invisible to CRC ($0\%$ detection rate). In contrast, the one's complement sum of $E(x)$ does not sum to zero modulo $2^{16}-1$, so the 16-bit Checksum detects the error with $100\%$ certainty.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.85\linewidth]{plots/fig2_error_detection_heatmap.png}
-    \caption{Heatmap of Error Detection Efficacy Across All Schemes and Error Types.}
-    \label{fig:heatmap}
-\end{figure}
-
-% ==============================================================================
-% 4. CHANNEL IMPAIRMENTS & FLOW CONTROL
-% ==============================================================================
-\section{Channel Impairment Modeling \& Flow Control}
-
-\subsection{Channel Impairment Simulation}
-The \texttt{SimulatedChannel} class intercepts every outgoing datagram and frame:
-\begin{itemize}
-    \item \textbf{Packet Loss ($p_{\text{loss}}$)}: The packet is dropped, requiring sender timer expiration.
-    \item \textbf{Bit Error ($p_{\text{error}}$)}: Bits are inverted using the specified error injection pattern before transmission.
-    \item \textbf{Latency \& Jitter ($p_{\text{delay}}$)}: An artificial delay between $60\text{ ms}$ and $180\text{ ms}$ is introduced. Because the socket timeout is set to $400\text{ ms}$ (or $100\text{ ms}$ in aggressive tests), delayed packets trigger premature timeouts and duplicate transmissions.
-    \item \textbf{ACK Loss ($p_{\text{ack\_loss}}$)}: Acknowledgments returned by the receiver are dropped on the reverse path.
-\end{itemize}
-
-\subsection{Stop-and-Wait ARQ Performance}
-For a Stop-and-Wait ARQ protocol with packet loss probability $p$, the expected number of transmissions required to successfully deliver a packet is:
-\begin{equation}
-    E[T] = \sum_{k=1}^{\infty} k \cdot p^{k-1} (1-p) = \frac{1}{1-p}
-\end{equation}
-The throughput transmission efficiency $\eta$ is defined as:
-\begin{equation}
-    \eta = \frac{\text{Unique Data Frames}}{\text{Total Transmissions Sent}} \times 100\% \approx (1 - p) \times 100\%
-\end{equation}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{plots/fig3_efficiency_vs_loss_rate.png}
-    \caption{Throughput Efficiency vs Channel Packet Loss Rate.}
-    \label{fig:efficiency}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{plots/fig4_rtt_latency_and_jitter.png}
-    \caption{Round-Trip Time (RTT) and Network Jitter Distribution.}
-    \label{fig:rtt}
-\end{figure}
-
-% ==============================================================================
-% 5. EXPERIMENTAL RESULTS & BENCHMARK DATA
-% ==============================================================================
-\section{Experimental Results \& Benchmark Data}
-
-\subsection{Detection Matrix Benchmark Table}
-Table~\ref{tab:matrix_results} records the empirical detection rates measured across 200 trials for each combination of error scheme and injection type.
+\subsubsection{BOOTP Packet Structure \& Field Breakdown}
+Every BOOTP message is encapsulated in a fixed-size 300-byte structure comprising a 236-byte static header followed by a 64-byte vendor information area. Table~\ref{tab:bootp_layout} details each field's offset, length, and functional responsibility:
 
 \begin{table}[H]
 \centering
 \small
-\caption{Empirical Detection Rates Across Error Schemes (200 Trials Each)}
-\label{tab:matrix_results}
-\begin{tabular}{lccccccc}
-\toprule
-\textbf{Scheme} & \textbf{Single} & \textbf{2-Isol} & \textbf{Odd} & \textbf{Burst-8} & \textbf{CS-Blind} & \textbf{CRC-Blind} & \textbf{Rand-Byte} \\
-\midrule
-16-bit Checksum   & 100.0\% & 99.0\%  & 100.0\% & 100.0\% & \textbf{0.0\%}  & 100.0\%         & 100.0\% \\
-CRC-8             & 100.0\% & 98.5\%  & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 99.0\% \\
-CRC-10            & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
-CRC-16            & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
-CRC-32            & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
-Hamming SEC-DED   & 100.0\% & 100.0\% & 100.0\% & 97.5\%  & 100.0\%         & 100.0\%         & 97.0\% \\
-2D Parity (LRC)   & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & 100.0\%         & 100.0\% \\
-\bottomrule
-\end{tabular}
+\begin{tabularx}{\linewidth}{|c|c|c|X|}
+\hline
+\textbf{Offset (B)} & \textbf{Field Name} & \textbf{Size (B)} & \textbf{Functional Description \& Architectural Role} \\ \hline
+0 & \texttt{op} & 1 & Packet Opcode: \texttt{1} = \texttt{BOOTREQUEST} (Client to Server), \texttt{2} = \texttt{BOOTREPLY} (Server to Client). \\ \hline
+1 & \texttt{htype} & 1 & Hardware address type identifier (\texttt{1} = 10/100/1000 Mb Ethernet). \\ \hline
+2 & \texttt{hlen} & 1 & Hardware address length in octets (\texttt{6} for standard 48-bit Ethernet MAC). \\ \hline
+3 & \texttt{hops} & 1 & Hop counter incremented by relay agents (BOOTP helpers) to prevent infinite routing loops. \\ \hline
+4 & \texttt{xid} & 4 & Transaction Identifier: Randomized 32-bit number generated by the client to correlate requests with replies. \\ \hline
+8 & \texttt{secs} & 2 & Elapsed seconds since client initiated the bootstrap process; allows servers to prioritize delayed clients. \\ \hline
+10 & \texttt{flags} & 2 & Broadcast flag: Bit 0 set to 1 requests server to broadcast the reply; cleared to 0 requests unicast. \\ \hline
+12 & \texttt{ciaddr} & 4 & Client IP address; initialized to \texttt{0.0.0.0} in initial bootstrap queries. \\ \hline
+16 & \texttt{yiaddr} & 4 & ``Your'' (Client) IP address; populated by the server with the host's assigned logical IP. \\ \hline
+20 & \texttt{siaddr} & 4 & Next server IP address; identifies the TFTP server hosting the bootloader image file. \\ \hline
+24 & \texttt{giaddr} & 4 & Gateway / Relay Agent IP address; populated by intermediate routers forwarding cross-subnet traffic. \\ \hline
+28 & \texttt{chaddr} & 16 & Client hardware address; 6-byte Ethernet MAC padded with 10 trailing null bytes for alignment. \\ \hline
+44 & \texttt{sname} & 64 & Null-terminated optional server hostname string (e.g., \texttt{bootp-srv.campus.net}). \\ \hline
+108 & \texttt{file} & 128 & Null-terminated bootfile pathname string (e.g., \texttt{pxelinux.0} or \texttt{vmlinuz}). \\ \hline
+236 & \texttt{vend} & 64 & Vendor Extensions Area (RFC 1048 Tag-Length-Value options preceded by Magic Cookie). \\ \hline
+\end{tabularx}
+\caption{BOOTP Packet Field Specification (RFC 951 \& RFC 1048).}
+\label{tab:bootp_layout}
 \end{table}
 
-\subsection{Efficiency Sweep Under Packet Loss}
-Table~\ref{tab:loss_efficiency} summarizes the throughput efficiency measured across increasing packet loss rates.
+\subsubsection{Transaction Identifier (XID) Concurrent Client Discrimination}
+When multiple diskless workstations power up simultaneously on a shared physical Ethernet collision domain or broadcast segment, all hosts transmit identical broadcast requests with source IP \texttt{0.0.0.0}. To prevent a client from incorrectly processing a reply destined for another machine, each client generates a cryptographically pseudorandom 32-bit integer $XID$ (e.g., \texttt{0xABCD1234}). The server echoes this exact $XID$ in its \texttt{BOOTREPLY}. Any incoming packet whose $XID$ does not match the client's internal active register is discarded immediately without state modification.
+
+\subsubsection{RFC 1048 Vendor Information Area \& The Magic Cookie}
+In the original RFC 951 specification, the 64-byte \texttt{vend} field was undefined, resulting in proprietary vendor collisions. RFC 1048 formalized this area by establishing a standardized Tag-Length-Value (TLV) encoding, guarded by a mandatory 4-byte prefix known as the \textbf{Magic Cookie}:
+\begin{equation}
+    \text{Magic Cookie} = \texttt{0x63825363} \quad (\text{decimal dotted-quad: } 99.130.83.99)
+\end{equation}
+When a parser detects this 32-bit signature, it decodes the remaining octets as sequential TLV blocks:
+\begin{itemize}
+    \item \textbf{Tag 1 (Subnet Mask)}: Length 4 octets. In our implementation: \texttt{255.255.255.0}.
+    \item \textbf{Tag 3 (Default Router / Gateway)}: Length 4 octets. In our implementation: \texttt{192.168.10.1}.
+    \item \textbf{Tag 6 (Domain Name Server)}: Length 4 octets. In our implementation: \texttt{192.168.10.1}.
+    \item \textbf{Tag 12 (Host Name)}: Variable length ASCII string identifying the workstation.
+    \item \textbf{Tag 255 (End Option)}: Single byte \texttt{0xFF} marking the termination of valid options.
+\end{itemize}
+
+\subsubsection{Architectural Limitations of BOOTP}
+Although BOOTP successfully solved the diskless bootstrap challenge, two structural limitations became critical as networking scaled:
+\begin{enumerate}
+    \item \textbf{Static Table-Driven Allocation}: BOOTP requires an administrator to manually pre-configure every client's MAC address in a static server file (\texttt{/etc/bootptab}). If an unlisted host joins the network, the BOOTP server ignores it.
+    \item \textbf{Absence of Address Reclamation (No Leases)}: BOOTP assignments are permanent. Once an IP is mapped to a MAC, that IP cannot be recycled or temporarily granted to mobile or transient laptops.
+\end{enumerate}
+These limitations directly motivated the development of DHCP.
+
+% -------------------------------------------------------------
+\subsection{DHCP: Dynamic Host Configuration Protocol (RFC 2131, RFC 2132)}
+The Dynamic Host Configuration Protocol (DHCP), authored by Ralph Droms in RFC 1531 and finalized in RFC 2131 and RFC 2132 (March 1997), extends BOOTP by introducing \textbf{automated, dynamic IP address leasing and reclamation}. Crucially, DHCP was designed to be fully backward-compatible with the BOOTP frame format: it repurposes the BOOTP packet structure, expands the vendor options area from 64 to 312 bytes, and uses Option 53 (\texttt{DHCP Message Type}) to orchestrate dynamic state transitions.
+
+\subsubsection{The Dynamic Lease Allocation Model}
+Instead of permanent table mappings, a DHCP server manages a dynamic pool of contiguous IP addresses (in our implementation, \texttt{192.168.10.100} through \texttt{192.168.10.200}). When an unconfigured host requests network access, the server temporarily leases an available IP address for a negotiated duration (e.g., $7200\text{ seconds} = 2\text{ hours}$). The client must actively renew its lease while online; if the client disconnects or powers down, the lease expires and the IP address returns automatically to the free pool.
+
+\subsubsection{The 4-Way DORA Handshake Walkthrough}
+The complete dynamic configuration exchange follows the classic four-phase DORA sequence:
+\begin{enumerate}
+    \item \textbf{DHCPDISCOVER (Client $\to$ Broadcast)}:
+    \begin{itemize}
+        \item Source IP: \texttt{0.0.0.0:68}, Destination IP: \texttt{255.255.255.255:67}.
+        \item Flag: Broadcast bit set.
+        \item Includes client hardware MAC address, transaction identifier $XID$, and Option 55 (\textit{Parameter Request List}) requesting subnet mask, default router, and DNS servers.
+        \item Purpose: Announces to all reachable DHCP servers on the physical segment that an unconfigured host requires configuration.
+    \end{itemize}
+
+    \item \textbf{DHCPOFFER (Server $\to$ Client / Broadcast)}:
+    \begin{itemize}
+        \item Source IP: \texttt{192.168.10.1:67}, Destination: \texttt{255.255.255.255:68} (or unicast).
+        \item Populates \texttt{yiaddr} with an unallocated IP from its managed lease pool (\texttt{192.168.10.100}).
+        \item Encodes mandatory lease options: Option 51 (\textit{Lease Time} = $7200\text{ s}$), Option 54 (\textit{Server ID} = \texttt{192.168.10.1}), Option 58 ($T_1 = 3600\text{ s}$), Option 59 ($T_2 = 6300\text{ s}$), Subnet Mask, and Default Router.
+        \item Purpose: Server reserves the offered IP temporarily and proposes configuration parameters to the client.
+    \end{itemize}
+
+    \item \textbf{DHCPREQUEST (Client $\to$ Broadcast)}:
+    \begin{itemize}
+        \item Source IP: \texttt{0.0.0.0:68}, Destination: \texttt{255.255.255.255:67}.
+        \item Populates Option 50 (\textit{Requested IP Address} = \texttt{192.168.10.100}) and Option 54 (\textit{Server Identifier} = \texttt{192.168.10.1}).
+        \item \textbf{Architectural Necessity of Broadcast}: Even though the client has received an offer from a specific server, it broadcasts its acceptance. This allows all other competing DHCP servers on the subnet to see that their alternative offers were not chosen, enabling them to release their reserved IPs back to their free pools immediately without waiting for offer timeouts.
+    \end{itemize}
+
+    \item \textbf{DHCPACK (Server $\to$ Client)}:
+    \begin{itemize}
+        \item The chosen server commits the lease binding (\texttt{MAC 52:54:00:12:34:56} $\to$ \texttt{IP 192.168.10.100}) into its persistent database (\texttt{leases.json}).
+        \item Transmits \texttt{DHCPACK} echoing the lease parameters. Upon reception, the client transitions from the \texttt{REQUESTING} state to the \texttt{BOUND} state, binds the IP to its network stack, and starts its lease expiration timers.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{DHCP Timer Mechanics \& State Transitions}
+A compliant DHCP client operates three interdependent lease countdown timers:
+\begin{enumerate}
+    \item \textbf{Lease Time ($T = 7200\text{ s}$)}: Total duration for which the client is legally authorized to use the leased IP address.
+    \item \textbf{Renewal Timer ($T_1 = 0.5 \times T = 3600\text{ s}$)}: When $T_1$ expires, the client enters the \texttt{RENEWING} state and transmits a unicast \texttt{DHCPREQUEST} directly to the server that granted the lease. If the server replies with \texttt{DHCPACK}, all timers reset to $T$ and the client remains \texttt{BOUND}.
+    \item \textbf{Rebinding Timer ($T_2 = 0.875 \times T = 6300\text{ s}$)}: If the original server is down or unresponsive and no \texttt{DHCPACK} is received by $T_2$, the client transitions to the \texttt{REBINDING} state. In this state, the client broadcasts \texttt{DHCPREQUEST} to \textbf{any} reachable DHCP server on the local subnet to extend its lease.
+    \item \textbf{Lease Expiration ($T = 0$)}: If no server responds before the full lease duration expires, the client must cease all IP communication immediately, release its socket bindings, and transition back to \texttt{INIT} to restart the DORA handshake.
+\end{enumerate}
+
+\subsubsection{Graceful Teardown: DHCPRELEASE (RFC 2131 Section 3.1.6)}
+When a host shuts down or disconnects gracefully, it transmits a unicast \texttt{DHCPRELEASE} packet to the server on UDP port \texttt{6769}. The packet contains the client's hardware MAC, leased IP in \texttt{ciaddr}, and Option 54 (Server Identifier). Upon reception, the server removes the client from its active binding database and instantly returns \texttt{192.168.10.100} to the available lease pool, ensuring zero address starvation.
+
+% -------------------------------------------------------------
+\subsection{TELNET: Network Virtual Terminal Protocol (RFC 854, RFC 855)}
+Published by Jon Postel and Joyce Reynolds in RFC 854 and RFC 855 (May 1983), the TELNET protocol provides a versatile, bi-directional, eight-bit byte-oriented communications facility designed to establish interactive terminal sessions between remote hosts over a reliable TCP transport connection (default port \texttt{2323} in our implementation).
+
+\subsubsection{The Network Virtual Terminal (NVT) Abstraction}
+In the early days of ARPANET, computer systems used radically incompatible physical terminals (e.g., IBM 3270, DEC VT100, Teletype Model 33), each utilizing idiosyncratic character codes, cursor control escape sequences, and line termination conventions. TELNET solved this terminal fragmentation problem by introducing the \textbf{Network Virtual Terminal (NVT)}.
+
+The NVT is an imaginary, canonical device with a standardized keyboard and display:
+\begin{itemize}
+    \item \textbf{Character Set}: 7-bit US-ASCII transmitted within an 8-bit octet (highest bit set to zero).
+    \item \textbf{End-of-Line Convention}: An explicit two-character carriage return and line feed sequence:
+    \begin{equation}
+        \text{EOL} = \texttt{\textbackslash r\textbackslash n} \quad (\text{Hex: } \texttt{0x0D 0x0A})
+    \end{equation}
+    \item \textbf{Command Signals}: Standardized signals such as Interrupt Process (\texttt{IP}), Abort Output (\texttt{AO}), and Are You There (\texttt{AYT}).
+\end{itemize}
+Both client and server map their local physical keyboard and screen conventions to and from the NVT representation, ensuring universal terminal interoperability.
+
+\subsubsection{In-Band Control Signaling \& Interpret As Command (IAC) Escaping}
+Unlike modern protocols that split control and data into distinct TCP streams or multiplexed frames, TELNET operates using \textbf{in-band signaling}: control commands and terminal data share the exact same byte stream.
+
+To distinguish control commands from user data, TELNET reserves the byte value \texttt{0xFF} (decimal 255) as the \textbf{Interpret As Command (IAC)} prefix:
+\begin{equation}
+    \text{Command Sequence} = \texttt{IAC} + \langle\text{Verb}\rangle + \langle\text{Option Code}\rangle
+\end{equation}
+
+\paragraph{The Byte-Stuffing Rule:}
+If a user program or file upload transmits the literal binary byte \texttt{0xFF} as payload data, the sender MUST escape it by emitting two consecutive \texttt{0xFF} octets:
+\begin{equation}
+    \text{Literal 0xFF on Wire} = \texttt{0xFF 0xFF} \quad (\texttt{IAC IAC})
+\end{equation}
+When the receiver's state machine encounters \texttt{0xFF 0xFF}, it consumes both bytes and emits a single literal \texttt{0xFF} into the application data stream.
+
+\subsubsection{RFC 854 Command Primitives}
+Table~\ref{tab:telnet_cmds} summarizes the canonical command codes recognized by our TELNET state machine:
 
 \begin{table}[H]
 \centering
-\caption{Channel Efficiency vs Loss Rate (50 Packets Transmitted)}
-\label{tab:loss_efficiency}
-\begin{tabular}{ccccc}
-\toprule
-\textbf{Loss Rate} & \textbf{Unique Packets} & \textbf{Total Transmitted} & \textbf{Retransmissions} & \textbf{Efficiency (\%)} \\
-\midrule
-0\%   & 50 & 50 & 0  & 100.00\% \\
-5\%   & 50 & 51 & 1  & 98.04\% \\
-10\%  & 50 & 56 & 6  & 89.29\% \\
-15\%  & 50 & 62 & 12 & 80.65\% \\
-20\%  & 50 & 59 & 9  & 84.75\% \\
-30\%  & 50 & 74 & 24 & 67.57\% \\
-\bottomrule
-\end{tabular}
+\small
+\begin{tabularx}{\linewidth}{|c|c|c|X|}
+\hline
+\textbf{Mnemonic} & \textbf{Code (Dec)} & \textbf{Code (Hex)} & \textbf{RFC 854 Semantic Meaning} \\ \hline
+\texttt{SE} & 240 & \texttt{0xF0} & Subnegotiation End: Terminates a parameter string. \\ \hline
+\texttt{NOP} & 241 & \texttt{0xF1} & No Operation: Used for keep-alive or padding. \\ \hline
+\texttt{DM} & 242 & \texttt{0xF2} & Data Mark: Indicates synchronization mark in TCP stream. \\ \hline
+\texttt{BRK} & 243 & \texttt{0xF3} & Break key pressed on terminal. \\ \hline
+\texttt{IP} & 244 & \texttt{0xF4} & Interrupt Process: Demands immediate suspension of running process. \\ \hline
+\texttt{AO} & 245 & \texttt{0xF5} & Abort Output: Flushes buffered display output while allowing command to finish. \\ \hline
+\texttt{AYT} & 246 & \texttt{0xF6} & Are You There: Requests visible confirmation of host responsiveness. \\ \hline
+\texttt{EC} & 247 & \texttt{0xF7} & Erase Character: Deletes preceding character in input buffer. \\ \hline
+\texttt{EL} & 248 & \texttt{0xF8} & Erase Line: Deletes entire current input line. \\ \hline
+\texttt{GA} & 249 & \texttt{0xF9} & Go Ahead: Half-duplex turn-taking signal. \\ \hline
+\texttt{SB} & 250 & \texttt{0xFA} & Subnegotiation Begin: Initiates multi-byte option parameters. \\ \hline
+\texttt{WILL} & 251 & \texttt{0xFB} & Negotiation Verb: Sender desires or offers to activate an option. \\ \hline
+\texttt{WONT} & 252 & \texttt{0xFC} & Negotiation Verb: Sender refuses or demands deactivation of an option. \\ \hline
+\texttt{DO} & 253 & \texttt{0xFD} & Negotiation Verb: Sender requests receiver to activate an option. \\ \hline
+\texttt{DONT} & 254 & \texttt{0xFE} & Negotiation Verb: Sender demands receiver deactivate an option. \\ \hline
+\texttt{IAC} & 255 & \texttt{0xFF} & Interpret As Command: Prefix for all TELNET control signaling. \\ \hline
+\end{tabularx}
+\caption{TELNET RFC 854 Command Codes and Semantic Definitions.}
+\label{tab:telnet_cmds}
 \end{table}
 
-% ==============================================================================
-% 6. CROSS-DEVICE DEPLOYMENT & INSTRUCTIONS
-% ==============================================================================
-\section{Cross-Device Deployment \& Instructions}
+\subsubsection{Symmetric 4-Verb Option Negotiation State Machine}
+TELNET features an elegant symmetric option negotiation mechanism governed by four verbs:
+\begin{itemize}
+    \item \texttt{WILL Option}: ``I offer to enable Option, or confirm I am enabling Option.''
+    \item \texttt{DO Option}: ``Please enable Option on your side, or I request you to enable Option.''
+    \item \texttt{WONT Option}: ``I refuse to enable Option, or I am disabling Option.''
+    \item \texttt{DONT Option}: ``You must not enable Option, or disable Option immediately.''
+\end{itemize}
 
-The application cleanly supports multi-device deployment over a physical LAN.
+\paragraph{Loop Avoidance Invariant:}
+An option negotiation loop occurs if endpoints enter an infinite exchange of requests and acknowledgments. To prevent negotiation storms, RFC 854 establishes the strict invariant:
+\begin{quote}
+\textit{A party MUST NOT send a negotiation response to a request that merely confirms a state that is already active.}
+\end{quote}
+Only a change in state triggers a response datagram.
 
-\subsection{Building the Executables}
+\subsubsection{Negotiated Options in Project Architecture}
+Our implementation actively negotiates three vital RFC options:
+\begin{enumerate}
+    \item \textbf{Option 1: Echo (\texttt{TELOPT\_ECHO}, RFC 857)}:
+    In standard local mode, the terminal displays characters locally as typed. Enabling remote echo via \texttt{IAC WILL ECHO} transfers echoing responsibility to the server daemon, allowing secure password masking and server-controlled character manipulation.
+    \item \textbf{Option 3: Suppress Go Ahead (\texttt{TELOPT\_SGA}, RFC 858)}:
+    By default, the NVT operates in half-duplex mode requiring explicit \texttt{IAC GA} signals to pass transmission control. Negotiating \texttt{IAC DO SGA} suppresses this signal, enabling full-duplex interactive character streaming.
+    \item \textbf{Option 24: Terminal Type (\texttt{TELOPT\_TTYPE}, RFC 1091)}:
+    Enables server to interrogate the client's terminal emulator identity (\texttt{xterm-256color}, \texttt{VT100}, or \texttt{ansi}), allowing the server to tailor cursor control escape sequences.
+\end{enumerate}
+
+\subsubsection{Application Remote Command Shell \& Stop-and-Wait ARQ Integration}
+Once option negotiation concludes, the TELNET session provides two operational capabilities:
+\begin{itemize}
+    \item \textbf{Interactive Remote Shell}: Client dispatches commands (\texttt{help}, \texttt{network\_info}, \texttt{status}, \texttt{calc <arg1> <op> <arg2>}, \texttt{ping}, \texttt{echo <msg>}, \texttt{exit}). The server executes each command and returns formatted text replies over the TCP stream.
+    \item \textbf{Stop-and-Wait ARQ Bulk File Transfer}: To test flow control and error detection, the client streams structured text records (from \texttt{input\_commands.txt}). The payload is chunked, encapsulated in a 16-byte \texttt{FrameHeader} with CRC-32 FCS, and transmitted over TCP. The client waits for an \texttt{ACK} frame from the server before transmitting the next chunk, guaranteeing positive flow control, retransmission upon timeout ($400\text{ ms}$), and NACK rejection upon bit corruption.
+\end{itemize}
+
+\subsection{Error Detection Mathematics \& Redundancy Theory}
+
+\subsubsection{16-Bit Internet Checksum (RFC 1071)}
+The 16-bit Checksum groups data into $M$ 16-bit words $W_1, W_2, \dots, W_M$ and computes their sum using one's complement arithmetic:
+\begin{equation}
+    S = \sum_{i=1}^{M} W_i \pmod{2^{16} - 1}
+\end{equation}
+Any arithmetic overflow beyond 16 bits is folded back into the least significant bit (end-around carry). The transmitted FCS is the bitwise negation:
+\begin{equation}
+    \text{FCS}_{\text{Checksum}} = \sim S
+\end{equation}
+
+\subsubsection{Cyclic Redundancy Check (CRC)}
+CRC treats data bit strings as polynomials in Galois Field $\text{GF}(2)$ where addition and subtraction are identical to bitwise XOR. Given an $n$-bit message polynomial $M(x)$ and a degree-$r$ generator polynomial $G(x)$, the sender computes:
+\begin{equation}
+    R(x) = [M(x) \cdot x^r] \pmod{G(x)}
+\end{equation}
+The transmitted frame polynomial is:
+\begin{equation}
+    T(x) = M(x) \cdot x^r + R(x)
+\end{equation}
+The generator polynomials evaluated in this project are:
+\begin{itemize}
+    \item \textbf{CRC-8}: $G(x) = x^8 + x^7 + x^6 + x^4 + x^2 + 1$ (Hex: \texttt{0xD5})
+    \item \textbf{CRC-10}: $G(x) = x^{10} + x^9 + x^5 + x^4 + x + 1$ (Hex: \texttt{0x233})
+    \item \textbf{CRC-16}: $G(x) = x^{16} + x^{15} + x^2 + 1$ (Hex: \texttt{0x8005})
+    \item \textbf{CRC-32 (IEEE 802.3)}: $G(x) = x^{32} + x^{26} + x^{23} + x^{22} + x^{16} + x^{12} + x^{11} + x^{10} + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1$ (Hex: \texttt{0x04C11DB7})
+\end{itemize}
+
+\subsubsection{Extended Hamming SEC-DED Code}
+For a message block of $k$ bits, $m$ parity bits are introduced such that $2^m \ge k + m + 1$. An extra global parity bit is appended to extend the minimum Hamming distance from $d_{\min} = 3$ to $d_{\min} = 4$. This enables:
+\begin{itemize}
+    \item Single-bit error correction via syndrome vector $S = H \cdot r^T$.
+    \item Double-bit error detection when syndrome $S \neq 0$ but global parity is valid.
+\end{itemize}
+
+\subsubsection{Two-Dimensional Parity (LRC+VRC)}
+Data bytes are arranged in an $R \times 8$ matrix. Vertical Redundancy Check (VRC) computes even parity per row (byte), while Longitudinal Redundancy Check (LRC) computes an 8-bit XOR checksum across all columns. This detects all 1-bit, 2-bit, and 3-bit errors, and any burst error occurring in a single row.
+
+\subsection{Mathematical Blind Spot Proofs}
+
+\paragraph{Case 1: Checksum Blind Spot (Balanced Word Modification)}
+Consider a message containing two 16-bit words $W_a$ and $W_b$. An attacker or channel perturbation modifies both words symmetrically:
+\begin{equation}
+    W_a' = W_a + \delta, \quad W_b' = W_b - \delta \quad (\delta \in \mathbb{Z}^+)
+\end{equation}
+The modified one's complement sum is:
+\begin{equation}
+    \sum W_i' = (W_a + \delta) + (W_b - \delta) + \sum_{k \neq a, b} W_k = \sum W_i \pmod{2^{16} - 1}
+\end{equation}
+Because the arithmetic sum is identical, the computed checksum is unchanged:
+\begin{equation}
+    \text{Checksum}(M') = \text{Checksum}(M) \implies \text{Detection Rate} = 0.0\%
+\end{equation}
+However, in polynomial arithmetic $\text{GF}(2)$, addition is bitwise XOR without carries:
+\begin{equation}
+    (W_a \oplus \delta) \oplus (W_b \ominus \delta) \neq W_a \oplus W_b
+\end{equation}
+Thus, CRC-32 detects this alteration with $100.0\%$ certainty.
+
+\paragraph{Case 2: CRC Blind Spot (Polynomial Multiple Perturbation)}
+Let $E(x)$ be an error polynomial injected into transmitted frame $T(x)$:
+\begin{equation}
+    T'(x) = T(x) \oplus E(x)
+\end{equation}
+If $E(x)$ is constructed as an exact non-zero polynomial multiple of the generator $G(x)$:
+\begin{equation}
+    E(x) = Q(x) \cdot G(x) \quad (Q(x) \neq 0)
+\end{equation}
+The receiver recalculates the remainder:
+\begin{align}
+    R'(x) &= T'(x) \pmod{G(x)} \\
+          &= [T(x) \pmod{G(x)}] \oplus [E(x) \pmod{G(x)}] \\
+          &= 0 \oplus [Q(x) \cdot G(x) \pmod{G(x)}] = 0 \oplus 0 = 0
+\end{align}
+The CRC remainder is exactly zero. The corrupted frame is accepted as pristine ($0.0\%$ detection rate). Conversely, because $E(x)$ introduces arbitrary non-canceling arithmetic carries, the 16-bit Checksum detects the error with $100.0\%$ certainty.
+
+% =============================================================
+% SECTION 3: IPC & CHANNEL EMULATION ARCHITECTURE
+% =============================================================
+\section{Inter-Process Communication \& Channel Architecture}
+
+\subsection{Hybrid POSIX Socket Transport}
+To accurately model physical network protocols, our architecture utilizes POSIX Berkeley Sockets spanning both UDP (User Datagram Protocol, \texttt{SOCK\_DGRAM}) and TCP (Transmission Control Protocol, \texttt{SOCK\_STREAM}):
+\begin{itemize}
+    \item \textbf{BOOTP \& DHCP over UDP}: Unconfigured diskless hosts cannot perform 3-way TCP handshakes because they lack an established IP identity. UDP provides connectionless, lightweight datagram messaging.
+    \item \textbf{TELNET over TCP}: Interactive character terminals require guaranteed in-order stream delivery, flow control, and connection state management, which TCP provides.
+\end{itemize}
+
+\subsection{Non-Blocking Event Multiplexing via \texttt{select()}}
+The server daemon (\texttt{server.cpp}) binds simultaneously to three separate ports on \texttt{0.0.0.0}:
+\begin{itemize}
+    \item UDP Port 6767 (BOOTP Server Service)
+    \item UDP Port 6769 (DHCP Server Service)
+    \item TCP Port 2323 (TELNET Application Service)
+\end{itemize}
+To service incoming traffic across all three ports without multi-threading deadlocks or blocking on idle sockets, the server runs a single-threaded event loop driven by the \texttt{select()} system call:
+\begin{lstlisting}[language=C++]
+fd_set read_fds;
+FD_ZERO(&read_fds);
+FD_SET(bootp_sock, &read_fds);
+FD_SET(dhcp_sock, &read_fds);
+FD_SET(telnet_listen_sock, &read_fds);
+
+int max_fd = std::max({bootp_sock, dhcp_sock, telnet_listen_sock});
+struct timeval tv = {1, 0}; // 1-second timeout
+
+int activity = select(max_fd + 1, &read_fds, NULL, NULL, &tv);
+\end{lstlisting}
+When any client transmits a BOOTP datagram, a DHCP packet, or initiates a Telnet TCP connection, \texttt{select()} unblocks immediately, identifies the active file descriptor, and routes the packet to its specialized protocol engine.
+
+\subsection{Physical Channel Impairment Simulation}
+The \texttt{SimulatedChannel} class sits between the protocol engines and the network socket, modeling physical medium noise:
+\begin{itemize}
+    \item \textbf{Packet Loss ($p_{\text{loss}}$)}: Uses a uniform random distribution $\mathcal{U}(0, 1)$. If $r < p_{\text{loss}}$, the frame is dropped silently, testing the sender's ARQ timeout.
+    \item \textbf{Bit Corruption ($p_{\text{error}}$)}: Inverts bits according to the active deterministic error injection model.
+    \item \textbf{Channel Delay \& Jitter ($p_{\text{delay}}$)}: Introduces an artificial sleep between $60\text{ ms}$ and $180\text{ ms}$, creating network jitter and testing premature timeout scenarios.
+    \item \textbf{ACK Loss ($p_{\text{ack\_loss}}$)}: Drops confirmation packets on the reverse path, testing sender duplicate transmission handling.
+\end{itemize}
+
+% =============================================================
+% SECTION 4: VISUAL MODEL DIAGRAMS & SYSTEM ARCHITECTURE
+% =============================================================
+\section{System Architecture \& Visual Model Diagrams}
+
+\subsection{Overall Cross-Layer System Architecture}
+Figure~\ref{fig:overall_arch} illustrates the complete client-channel-server architecture spanning UDP, TCP, and the simulated physical medium. All components are strictly arranged within the page margin with orthogonal horizontal data channels and separated forward/return paths to ensure zero label overlap.
+
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[auto, >=stealth]
+\tikzstyle{col_header} = [rectangle, rounded corners=5pt, text width=4.2cm, text centered, minimum height=1.1cm, font=\bfseries\normalsize]
+\tikzstyle{cli_node}   = [rectangle, draw=blue!80!black, fill=blue!10, rounded corners=5pt, text width=4.2cm, text centered, minimum height=1.35cm]
+\tikzstyle{chan_node}  = [rectangle, draw=red!80!black, fill=red!10, rounded corners=5pt, text width=4.2cm, text centered, minimum height=1.35cm]
+\tikzstyle{srv_node}   = [rectangle, draw=green!80!black, fill=green!10, rounded corners=5pt, text width=4.2cm, text centered, minimum height=1.35cm]
+
+% Column Headers (Row 0)
+\node (h_cli)  [col_header, draw=blue!90!black, fill=blue!20] at (0, 0) {\textbf{CLIENT NODE}\\{\small MAC: \texttt{52:54:00:12:34:56}}};
+\node (h_chan) [col_header, draw=red!90!black, fill=red!20] at (7.5, 0) {\textbf{SIMULATED CHANNEL}\\{\small Noise, Loss \& Jitter Engine}};
+\node (h_srv)  [col_header, draw=green!90!black, fill=green!20] at (15.0, 0) {\textbf{SERVER DAEMON}\\{\small Multiplexed POSIX Sockets}};
+
+% Tier 1: BOOTP
+\node (c_bootp) [cli_node] at (0, -2.2) {\textbf{BOOTP Client}\\{\footnotesize UDP 6767 $\cdot$ XID Gen}};
+\node (ch_bootp)[chan_node] at (7.5, -2.2) {\textbf{BOOTP Channel}\\{\footnotesize FCS Checksum / Loss}};
+\node (s_bootp) [srv_node] at (15.0, -2.2) {\textbf{BOOTP Server}\\{\footnotesize Static: 192.168.10.50}};
+
+\draw [->, thick, >=stealth, blue!80!black] ($(c_bootp.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {BOOTREQUEST} ($(ch_bootp.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, blue!80!black] ($(c_bootp.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {BOOTREPLY} ($(ch_bootp.west)+(0, -0.28)$);
+
+\draw [->, thick, >=stealth, blue!80!black] ($(ch_bootp.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {Forward UDP:6767} ($(s_bootp.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, blue!80!black] ($(ch_bootp.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {pxelinux.0 Config} ($(s_bootp.west)+(0, -0.28)$);
+
+% Tier 2: DHCP DORA
+\node (c_dhcp)  [cli_node] at (0, -4.5) {\textbf{DHCP Client}\\{\footnotesize UDP 6769 $\cdot$ RFC 2131}};
+\node (ch_dhcp) [chan_node] at (7.5, -4.5) {\textbf{DHCP Channel}\\{\footnotesize Noise \& Delay Engine}};
+\node (s_dhcp)  [srv_node] at (15.0, -4.5) {\textbf{DHCP Server}\\{\footnotesize Dynamic: 192.168.10.100}};
+
+\draw [->, thick, >=stealth, purple!80!black] ($(c_dhcp.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {DISCOVER / REQ} ($(ch_dhcp.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, purple!80!black] ($(c_dhcp.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {OFFER / ACK} ($(ch_dhcp.west)+(0, -0.28)$);
+
+\draw [->, thick, >=stealth, purple!80!black] ($(ch_dhcp.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {Forward UDP:6769} ($(s_dhcp.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, purple!80!black] ($(ch_dhcp.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {Lease Commit} ($(s_dhcp.west)+(0, -0.28)$);
+
+% Tier 3: TELNET
+\node (c_telnet)[cli_node] at (0, -6.8) {\textbf{TELNET Client}\\{\footnotesize TCP 2323 $\cdot$ NVT ARQ}};
+\node (ch_telnet)[chan_node] at (7.5, -6.8) {\textbf{TELNET Channel}\\{\footnotesize Stop-and-Wait Control}};
+\node (s_telnet)[srv_node] at (15.0, -6.8) {\textbf{TELNET Server}\\{\footnotesize Command Dispatcher}};
+
+\draw [->, thick, >=stealth, teal!80!black] ($(c_telnet.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {NVT Commands} ($(ch_telnet.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, teal!80!black] ($(c_telnet.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {Output / ACKs} ($(ch_telnet.west)+(0, -0.28)$);
+
+\draw [->, thick, >=stealth, teal!80!black] ($(ch_telnet.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {Stream TCP:2323} ($(s_telnet.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, teal!80!black] ($(ch_telnet.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {Positive ACKs} ($(s_telnet.west)+(0, -0.28)$);
+
+% Tier 4: Cross-Layer Telemetry
+\node (c_tele)  [cli_node] at (0, -9.1) {\textbf{Client Monitor}\\{\footnotesize Live Gauges \& Metrics}};
+\node (ch_tele) [chan_node] at (7.5, -9.1) {\textbf{Channel Monitor}\\{\footnotesize Loss, Jitter \& Noise}};
+\node (s_tele)  [srv_node] at (15.0, -9.1) {\textbf{Server Monitor}\\{\footnotesize Session Logs \& Uptime}};
+
+\draw [->, thick, >=stealth, gray!70!black] ($(c_tele.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {Telemetry Sync} ($(ch_tele.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, gray!70!black] ($(c_tele.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {Client Metrics} ($(ch_tele.west)+(0, -0.28)$);
+
+\draw [->, thick, >=stealth, gray!70!black] ($(ch_tele.east)+(0, 0.28)$) -- node[above=1pt, font=\scriptsize\bfseries] {Channel Stats} ($(s_tele.west)+(0, 0.28)$);
+\draw [<-, thick, >=stealth, gray!70!black] ($(ch_tele.east)+(0, -0.28)$) -- node[below=1pt, font=\scriptsize\bfseries] {Server Status} ($(s_tele.west)+(0, -0.28)$);
+
+\end{tikzpicture}%
+}
+\caption{Overall System Architecture: Symmetrical Three-Tier Block Layout (Client, Channel, Server).}
+\label{fig:overall_arch}
+\end{figure}
+
+\subsection{Sequential Host Lifecycle Workflow}
+Figure~\ref{fig:lifecycle_flow} illustrates the four-stage host boot lifecycle executed under \texttt{--mode lifecycle}. Each stage transition is explicitly represented as an isolated, distinct event badge with dedicated connecting arrows, eliminating text overlap:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[auto, >=stealth]
+\tikzstyle{stage_box} = [rectangle, draw=black, rounded corners=4pt, text width=12.0cm, text centered, minimum height=1.1cm, font=\small]
+\tikzstyle{trans_box} = [rectangle, fill=white, rounded corners=3pt, font=\scriptsize\bfseries, inner sep=3.5pt]
+\tikzstyle{arrow}     = [thick,->,>=stealth]
+
+\node (s1) [stage_box, fill=cyan!15, draw=cyan!80!black] at (0, 0) {%
+    \textbf{STAGE 1: BOOTP Bare-Metal Bootstrap (UDP Port 6767)}\\
+    \footnotesize Diskless host queries server for bootloader path (\texttt{pxelinux.0}) and initial IP configuration
+};
+
+\node (t1) [trans_box, draw=cyan!80!black, text=cyan!90!black] at (0, -1.4) {%
+    $\Downarrow$ \textbf{Event:} \texttt{BOOTREPLY} received $\implies$ Initial IP \texttt{192.168.10.50} \& \texttt{pxelinux.0} acquired%
+};
+
+\node (s2) [stage_box, fill=purple!15, draw=purple!80!black] at (0, -2.8) {%
+    \textbf{STAGE 2: DHCP 4-Way DORA Lease Negotiation (UDP Port 6769)}\\
+    \footnotesize Dynamic allocation: \texttt{DISCOVER} $\to$ \texttt{OFFER} $\to$ \texttt{REQUEST} $\to$ \texttt{ACK} $\implies$ Leased IP \texttt{192.168.10.100}
+};
+
+\node (t2) [trans_box, draw=purple!80!black, text=purple!90!black] at (0, -4.2) {%
+    $\Downarrow$ \textbf{Event:} \texttt{DHCPACK} received $\implies$ IP \texttt{192.168.10.100} bound (7200s lease, T1=3600s, T2=6300s)%
+};
+
+\node (s3) [stage_box, fill=teal!15, draw=teal!80!black] at (0, -5.6) {%
+    \textbf{STAGE 3: TELNET Interactive Remote Terminal Session (TCP Port 2323)}\\
+    \footnotesize NVT Option Negotiation (\texttt{TTYPE}, \texttt{ECHO}, \texttt{SGA}), Remote Commands, and Stop-and-Wait ARQ Payload Upload
+};
+
+\node (t3) [trans_box, draw=teal!80!black, text=teal!90!black] at (0, -7.0) {%
+    $\Downarrow$ \textbf{Event:} User issues \texttt{exit} command $\implies$ Remote terminal session closed gracefully%
+};
+
+\node (s4) [stage_box, fill=orange!15, draw=orange!80!black] at (0, -8.4) {%
+    \textbf{STAGE 4: DHCP Lease Teardown \& Reclamation (UDP Port 6769)}\\
+    \footnotesize Terminal session exits; client transmits unicast \texttt{DHCPRELEASE} to return IP to pool
+};
+
+\node (t4) [trans_box, draw=orange!80!black, text=orange!90!black] at (0, -9.8) {%
+    $\Downarrow$ \textbf{Event:} Server acknowledges release $\implies$ IP \texttt{192.168.10.100} reclaimed; sockets closed%
+};
+
+\node (s5) [stage_box, fill=green!15, draw=green!80!black] at (0, -11.2) {%
+    \textbf{STAGE 5: Cross-Layer Telemetry \& Statistical Evaluation}\\
+    \footnotesize Computes RTT, RFC 3550 Jitter, Goodput, Framing Overhead, and renders visual ASCII allocation gauges
+};
+
+% Connecting Arrows Through Badges
+\draw [arrow, cyan!80!black] (s1.south) -- (t1.north);
+\draw [arrow, cyan!80!black] (t1.south) -- (s2.north);
+
+\draw [arrow, purple!80!black] (s2.south) -- (t2.north);
+\draw [arrow, purple!80!black] (t2.south) -- (s3.north);
+
+\draw [arrow, teal!80!black] (s3.south) -- (t3.north);
+\draw [arrow, teal!80!black] (t3.south) -- (s4.north);
+
+\draw [arrow, orange!80!black] (s4.south) -- (t4.north);
+\draw [arrow, orange!80!black] (t4.south) -- (s5.north);
+
+\end{tikzpicture}
+\caption{Sequential Host Lifecycle: Staged Transition from Network Bootstrap to Application Teardown.}
+\label{fig:lifecycle_flow}
+\end{figure}
+
+\subsection{DHCP Client Finite State Machine}
+Figure~\ref{fig:dhcp_fsm} depicts the DHCP client state transitions (RFC 2131). The lease expiration feedback loop is routed around the outer perimeter with generous clearance to guarantee zero arrow crossing:
+
+\begin{figure}[H]
+\centering
+\resizebox{0.92\linewidth}{!}{%
+\begin{tikzpicture}[auto, >=stealth]
+\tikzstyle{fsm_state} = [rectangle, draw=black, rounded corners=6pt, text width=3.4cm, text centered, minimum height=1.3cm, font=\small]
+\tikzstyle{arrow}     = [thick,->,>=stealth]
+
+% State Coordinates (Symmetrical 2-Column Layout)
+\node (init)  [fsm_state, fill=blue!15, draw=blue!80!black]   at (-4.6, 3.2) {\textbf{INIT}\\{\footnotesize No IP Assigned}};
+\node (sel)   [fsm_state, fill=purple!15, draw=purple!80!black] at (4.6, 3.2) {\textbf{SELECTING}\\{\footnotesize Collecting Offers}};
+\node (req)   [fsm_state, fill=orange!15, draw=orange!80!black] at (4.6, 0.0) {\textbf{REQUESTING}\\{\footnotesize Awaiting DHCPACK}};
+\node (bound) [fsm_state, fill=green!20, draw=green!80!black]   at (-4.6, 0.0) {\textbf{BOUND}\\{\footnotesize Active Lease: 7200s}};
+\node (rel)   [fsm_state, fill=red!15, draw=red!80!black]       at (-4.6, -3.2) {\textbf{RELEASED}\\{\footnotesize IP Returned to Pool}};
+
+% Forward Transitions (Clockwise Cycle)
+\draw [arrow, blue!80!black] (init.east) -- node[above=2pt, font=\scriptsize\bfseries, align=center, fill=white, inner sep=2pt] {1. Transmit DHCPDISCOVER\\(Broadcast Query)} (sel.west);
+\draw [arrow, purple!80!black] (sel.south) -- node[midway, right=4pt, font=\scriptsize\bfseries, align=left, fill=white, inner sep=2pt] {2. Recv DHCPOFFER /\\Send DHCPREQUEST} (req.north);
+\draw [arrow, green!70!black] (req.west) -- node[above=2pt, font=\scriptsize\bfseries, align=center, fill=white, inner sep=2pt] {3. Recv DHCPACK\\(Set Lease Timers)} (bound.east);
+\draw [arrow, red!80!black] (bound.south) -- node[midway, right=4pt, font=\scriptsize\bfseries, align=left, fill=white, inner sep=2pt] {4. Host Shutdown /\\Send DHCPRELEASE} (rel.north);
+
+% Outer Perimeter Return Path for Lease Expiration (T=0)
+\draw [arrow, dashed, red!80!black] (bound.west) -- ++(-1.8, 0) -- ++(0, 3.2) node[midway, left=2pt, font=\scriptsize\bfseries, align=right, text=red!80!black, fill=white, inner sep=2pt] {Lease Expired ($T=0$)\\/ Drop IP Address} -- (init.west);
+
+% T1 Renewal Self-Loop (Clean arc on top of BOUND)
+\draw [arrow, teal!80!black] ($(bound.north)+(0.7, 0)$) to [out=65, in=115, looseness=2.2] node[above=2pt, font=\scriptsize\bfseries, align=center, text=teal!90!black, fill=white, inner sep=2pt] {$T_1$ Expired: Unicast DHCPREQUEST\\$\to$ Recv DHCPACK (Renew)} ($(bound.north)+(-0.7, 0)$);
+\end{tikzpicture}%
+}
+\caption{DHCP Client Finite State Machine (RFC 2131) with Perimeter-Routed Expiration Loop.}
+\label{fig:dhcp_fsm}
+\end{figure}
+
+\subsection{Stop-and-Wait ARQ Protocol Operation (Ladder Diagram)}
+Figure~\ref{fig:arq_ladder} details the Stop-and-Wait ARQ flow control protocol under clean delivery, channel loss with timeout recovery, and bit corruption with negative acknowledgment. Every exchange is explicitly annotated with white-pill bounding boxes to prevent overlapping:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[auto, >=stealth]
+\tikzstyle{lifeline} = [thick, line width=1.5pt, color=gray!80]
+\tikzstyle{tx_arr}   = [thick,->,>=stealth, color=blue!80!black]
+\tikzstyle{ack_arr}  = [thick,->,>=stealth, color=green!70!black]
+\tikzstyle{err_arr}  = [thick,->,>=stealth, color=red!80!black]
+
+% Lifelines
+\draw [lifeline] (1.8, 0.6) -- (1.8, -9.0);
+\draw [lifeline] (12.2, 0.6) -- (12.2, -9.0);
+
+% Lifeline Labels
+\node at (1.8, 1.0) [rectangle, fill=blue!15, draw=blue!70!black, rounded corners=3pt, font=\small\bfseries] {SENDER (Client)};
+\node at (12.2, 1.0) [rectangle, fill=green!15, draw=green!70!black, rounded corners=3pt, font=\small\bfseries] {RECEIVER (Server)};
+
+% Case 1: Clean Transmission
+\draw [tx_arr] (1.8, 0.0) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {Frame \#0 (Clean Payload 114B) [CRC-32 Valid]} (12.2, -0.6);
+\draw [ack_arr] (12.2, -0.9) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {ACK \#0 (Frame \#0 Confirmed, Next Expected: \#1)} (1.8, -1.5);
+
+% Case 2: Packet Loss & Timeout Recovery
+\draw [err_arr] (1.8, -2.1) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {Frame \#1 (Lost in Transit: Uniform Loss Draw $r < p_{\text{loss}}$)} (7.0, -2.4);
+\node at (7.3, -2.4) [font=\Large\bfseries, text=red] {$\times$};
+
+% Timeout Bracket
+\draw [decorate, decoration={brace, amplitude=6pt, mirror}, red!80!black, thick] (1.5, -2.1) -- (1.5, -3.8)
+    node [midway, left=0.25cm, font=\scriptsize\bfseries, text=red!80!black] {ARQ Timer ($400\text{ ms}$)};
+
+\draw [tx_arr] (1.8, -3.9) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {Retransmit Frame \#1 (Attempt 2, Sequence Number 1)} (12.2, -4.5);
+\draw [ack_arr] (12.2, -4.8) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {ACK \#1 (Frame \#1 Confirmed, Next Expected: \#2)} (1.8, -5.4);
+
+% Case 3: Bit Corruption & FCS Rejection
+\draw [err_arr] (1.8, -6.0) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {Frame \#2 (Noise Injected: Single-Bit Inverted at Bit 248)} (12.2, -6.6);
+\draw [err_arr, dashed] (12.2, -6.9) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {NACK \#2 (CRC-32 Verification Failed $\implies$ Frame Discarded)} (1.8, -7.5);
+
+\draw [tx_arr] (1.8, -7.8) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {Retransmit Frame \#2 (Clean Recovery)} (12.2, -8.4);
+\draw [ack_arr] (12.2, -8.6) -- node[above=1pt, font=\scriptsize\bfseries, fill=white, inner sep=2pt] {ACK \#2 (Frame \#2 Confirmed)} (1.8, -9.0);
+
+\end{tikzpicture}
+\caption{Stop-and-Wait ARQ Sequence: Clean Delivery, Loss Recovery via Timeout, and FCS Corruption Rejection.}
+\label{fig:arq_ladder}
+\end{figure}
+
+% =============================================================
+% SECTION 5: PROTOCOL MESSAGES & EXECUTION MODES
+% =============================================================
+\section{Protocol Messages, Framing \& Execution Modes}
+
+\subsection{Framing Header Layout}
+Every packet across all three protocols is encapsulated in a rigid 16-byte \texttt{FrameHeader} structure. Table~\ref{tab:frame_layout} is bound strictly to \texttt{\textbackslash linewidth} using \texttt{tabularx} to guarantee clean margins:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{|c|c|c|X|}
+\hline
+\textbf{Offset} & \textbf{Field} & \textbf{Size (B)} & \textbf{Description} \\ \hline
+0 & \texttt{magic} & 4 & Protocol magic signature identifier (\texttt{0xBD790001}). \\ \hline
+4 & \texttt{protocol\_id} & 1 & Protocol type: 1=BOOTP, 2=DHCP, 3=TELNET-CTRL, 4=TELNET-DATA, 5=ACK, 6=NACK. \\ \hline
+5 & \texttt{seq\_num} & 2 & 16-bit Frame Sequence Number for Stop-and-Wait ARQ tracking. \\ \hline
+7 & \texttt{ack\_num} & 2 & 16-bit Acknowledgment Sequence Number confirmed by receiver. \\ \hline
+9 & \texttt{detection\_scheme} & 1 & 1=Checksum-16, 2=CRC-8, 3=CRC-10, 4=CRC-16, 5=CRC-32, 6=Hamming, 7=2D-Parity. \\ \hline
+10 & \texttt{payload\_len} & 2 & Length of serialized encapsulated payload in bytes. \\ \hline
+12 & \texttt{fcs} & 4 & 32-bit Frame Check Sequence (trailer redundancy verification bits). \\ \hline
+16 & \texttt{payload} & Variable & Application datagram (BOOTP, DHCP DORA packet, or Telnet command). \\ \hline
+\end{tabularx}
+\caption{16-Byte Encapsulation Frame Header Structure (\texttt{FrameHeader}).}
+\label{tab:frame_layout}
+\end{table}
+
+\subsection{Supported Execution Modes}
+\begin{itemize}
+    \item \textbf{Mode 1: Lifecycle (\texttt{--mode lifecycle}, Default)}: Executes the realistic sequential pipeline: Stage 1 BOOTP $\to$ Stage 2 DHCP DORA $\to$ Stage 3 TELNET remote shell $\to$ Stage 4 DHCPRELEASE.
+    \item \textbf{Mode 2: Concurrent (\texttt{--mode concurrent})}: Spawns three independent POSIX threads (\texttt{std::thread}) firing BOOTP, DHCP, and TELNET packets simultaneously into the multi-port server daemon.
+    \item \textbf{Mode 3: Standalone Testing}: Direct testing of individual protocols via \texttt{--mode bootp}, \texttt{--mode dhcp}, or \texttt{--mode telnet}.
+\end{itemize}
+
+\subsection{Interactive Showcase Features}
+\begin{itemize}
+    \item \textbf{Step-by-Step Mode (\texttt{--step})}: Pauses at each stage boundary and awaits \texttt{[ENTER]}, allowing presenters to explain results to an audience.
+    \item \textbf{Inter-Packet Pacing (\texttt{--delay <ms>})}: Introduces a readable delay (e.g., $250\text{ ms}$) between successive transmissions.
+    \item \textbf{Raw Wire Hex Dumps (\texttt{--hex} / \texttt{--verbose})}: Dumps 16-byte aligned hex and ASCII views of frames traveling on the wire.
+\end{itemize}
+
+% =============================================================
+% SECTION 6: CORE MODULES & CODE IMPLEMENTATION
+% =============================================================
+\section{Core Modules \& Code Implementation}
+
+\subsection{\texttt{include/common.hpp}: Foundation \& Telemetry Engine}
+\texttt{common.hpp} defines ANSI formatting, IP/MAC network address conversions, frame encapsulation headers, hex dump utilities, and the complete 8-card \texttt{Statistics} telemetry engine.
+
+\begin{lstlisting}[language=C++, caption=Telemetry Metrics and RFC 3550 Jitter Computation in Statistics]
+struct Statistics {
+    std::string role;
+    int total_packets_sent, total_packets_received, total_retransmissions;
+    int packets_lost, packets_corrupted, packets_delayed;
+    int errors_injected, errors_detected, errors_undetected;
+    int bootp_packets, dhcp_packets, telnet_packets;
+    int udp_packets, tcp_packets;
+    size_t total_bytes, net_payload_bytes, header_overhead_bytes;
+    std::vector<double> rtt_samples;
+
+    double avg_rtt() const {
+        if (rtt_samples.empty()) return 0.0;
+        return std::accumulate(rtt_samples.begin(), rtt_samples.end(), 0.0) / rtt_samples.size();
+    }
+
+    double jitter() const { // RFC 3550 Inter-Arrival Jitter
+        if (rtt_samples.size() < 2) return 0.0;
+        double diff_sum = 0.0;
+        for (size_t i = 1; i < rtt_samples.size(); ++i) {
+            diff_sum += std::abs(rtt_samples[i] - rtt_samples[i - 1]);
+        }
+        return diff_sum / (rtt_samples.size() - 1);
+    }
+
+    double efficiency() const {
+        int unique = total_packets_sent - total_retransmissions;
+        if (total_packets_sent <= 0) return 100.0;
+        return (static_cast<double>(unique) / total_packets_sent) * 100.0;
+    }
+};
+\end{lstlisting}
+
+\subsection{\texttt{src/error\_detection.cpp}: Redundancy Mathematics}
+This module implements the 7 error detection schemes with bit-level precision:
+
+\begin{lstlisting}[language=C++, caption=16-bit Internet Checksum Implementation (RFC 1071)]
+uint16_t compute_checksum16(const uint8_t* data, size_t length) {
+    uint32_t sum = 0;
+    size_t i = 0;
+    while (i + 1 < length) {
+        uint16_t word = (static_cast<uint16_t>(data[i]) << 8) | data[i + 1];
+        sum += word;
+        if (sum > 0xFFFF) sum = (sum & 0xFFFF) + 1; // End-around carry
+        i += 2;
+    }
+    if (i < length) { // Odd byte padding
+        uint16_t word = static_cast<uint16_t>(data[i]) << 8;
+        sum += word;
+        if (sum > 0xFFFF) sum = (sum & 0xFFFF) + 1;
+    }
+    return static_cast<uint16_t>(~sum & 0xFFFF);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption=CRC Bit-by-Bit Division Engine]
+uint32_t compute_crc(const uint8_t* data, size_t length, uint32_t poly, int bits) {
+    uint32_t remainder = 0;
+    uint32_t top_bit = (1U << (bits - 1));
+    uint32_t mask = (bits == 32) ? 0xFFFFFFFFU : ((1U << bits) - 1);
+
+    for (size_t i = 0; i < length; ++i) {
+        remainder ^= (static_cast<uint32_t>(data[i]) << (bits - 8));
+        for (int b = 0; b < 8; ++b) {
+            if (remainder & top_bit) {
+                remainder = ((remainder << 1) ^ poly) & mask;
+            } else {
+                remainder = (remainder << 1) & mask;
+            }
+        }
+    }
+    return remainder;
+}
+\end{lstlisting}
+
+\subsection{\texttt{src/error\_injection.cpp}: Targeted Fault Injection}
+Implements both random and mathematically deterministic error models:
+
+\begin{lstlisting}[language=C++, caption=Checksum-Blind and CRC-Blind Malicious Error Injectors]
+void inject_checksum_blind(uint8_t* data, size_t length) {
+    if (length < 4) return;
+    // Symmetrically modify two 16-bit words: +1 on word 0, -1 on word 1
+    uint16_t w1 = (data[0] << 8) | data[1];
+    uint16_t w2 = (data[2] << 8) | data[3];
+    w1 += 1;
+    w2 -= 1;
+    data[0] = (w1 >> 8) & 0xFF; data[1] = w1 & 0xFF;
+    data[2] = (w2 >> 8) & 0xFF; data[3] = w2 & 0xFF;
+}
+
+void inject_crc_blind(uint8_t* data, size_t length, uint32_t poly, int bits) {
+    size_t byte_len = (bits + 7) / 8;
+    if (length < byte_len) return;
+    // XOR the message with the exact generator polynomial pattern
+    for (size_t i = 0; i < byte_len; ++i) {
+        uint8_t poly_byte = (poly >> (8 * (byte_len - 1 - i))) & 0xFF;
+        data[i] ^= poly_byte;
+    }
+}
+\end{lstlisting}
+
+\subsection{\texttt{src/bootp.cpp}: BOOTP Packet Serialization}
+Serializes and deserializes RFC 951/1048 packets, enforcing magic cookies and vendor option extraction:
+
+\begin{lstlisting}[language=C++, caption=BOOTP Packet Deserialization \& Vendor Option Parsing]
+bool BootpPacket::deserialize(const uint8_t* data, size_t length, BootpPacket& pkt) {
+    if (length < 300) return false;
+    pkt.op = data[0];
+    pkt.htype = data[1];
+    pkt.hlen = data[2];
+    pkt.hops = data[3];
+    pkt.xid = (data[4]<<24) | (data[5]<<16) | (data[6]<<8) | data[7];
+    pkt.yiaddr = (data[16]<<24) | (data[17]<<16) | (data[18]<<8) | data[19];
+    pkt.siaddr = (data[20]<<24) | (data[21]<<16) | (data[22]<<8) | data[23];
+    std::memcpy(pkt.mac, data + 28, 6);
+    pkt.boot_file = std::string(reinterpret_cast<const char*>(data + 108));
+
+    // Verify RFC 1048 Magic Cookie
+    uint32_t cookie = (data[236]<<24) | (data[237]<<16) | (data[238]<<8) | data[239];
+    if (cookie == BOOTP_MAGIC_COOKIE) {
+        size_t off = 240;
+        while (off < 300 && data[off] != 255) {
+            uint8_t tag = data[off++];
+            if (tag == 0) continue; // Pad
+            uint8_t len = data[off++];
+            if (tag == 1 && len == 4) pkt.subnet_mask = (data[off]<<24) | ...;
+            if (tag == 3 && len == 4) pkt.router_ip   = (data[off]<<24) | ...;
+            off += len;
+        }
+    }
+    return true;
+}
+\end{lstlisting}
+
+\subsection{\texttt{src/dhcp.cpp}: 4-Way DORA Lease Pool Engine}
+Manages dynamic IP allocations, lease durations, and the 4-way DORA packet handshake:
+
+\begin{lstlisting}[language=C++, caption=DHCP Dynamic Lease Pool Allocation]
+uint32_t DhcpLeasePool::allocate_offer(const uint8_t mac[6], uint32_t requested_ip) {
+    std::string mac_s = mac_to_string(mac);
+    if (active_leases.count(mac_s)) return active_leases[mac_s].assigned_ip;
+
+    // Check if requested IP is free in configured range
+    if (requested_ip >= pool_start && requested_ip <= pool_end && !is_ip_allocated(requested_ip)) {
+        return requested_ip;
+    }
+    // Allocate next free address
+    for (uint32_t ip = pool_start; ip <= pool_end; ++ip) {
+        if (!is_ip_allocated(ip)) return ip;
+    }
+    return 0; // Pool exhausted
+}
+\end{lstlisting}
+
+\subsection{\texttt{src/telnet.cpp}: NVT Parser \& Remote Shell}
+Implements the RFC 854 state machine, parses IAC sequences, and executes remote commands:
+
+\begin{lstlisting}[language=C++, caption=Telnet IAC State Machine Parser]
+void TelnetParser::parse(const uint8_t* bytes, size_t length) {
+    for (size_t i = 0; i < length; ++i) {
+        uint8_t b = bytes[i];
+        switch (state) {
+            case STATE_DATA:
+                if (b == TELNET_IAC) state = STATE_IAC;
+                else clean_data += static_cast<char>(b);
+                break;
+            case STATE_IAC:
+                if (b == TELNET_IAC) { clean_data += static_cast<char>(0xFF); state = STATE_DATA; }
+                else if (b == TELNET_WILL || b == TELNET_WONT || b == TELNET_DO || b == TELNET_DONT) {
+                    verb = b; state = STATE_OPTION;
+                } else state = STATE_DATA;
+                break;
+            case STATE_OPTION:
+                // Option successfully consumed: (verb, b)
+                state = STATE_DATA;
+                break;
+        }
+    }
+}
+\end{lstlisting}
+
+% =============================================================
+% SECTION 7: DETAILED STEP-BY-STEP DRY RUNS
+% =============================================================
+\section{Detailed Step-by-Step Dry Runs \& Behavioral Analysis}
+
+To rigorously evaluate protocol mechanics and verify that our POSIX socket implementation conforms strictly to RFC specifications, we conducted granular, step-by-step execution traces under both clean and impaired physical channels. The following subsections present the analytical sequence and authentic terminal outputs captured directly from live test executions.
+
+\subsection{Dry Run 1: BOOTP Network Bootstrap Sequence (UDP Port 6767)}
+\paragraph{Chronological Execution Flow:}
+\begin{enumerate}
+    \item \textbf{T = 0.00 ms (Client Initialization)}: The client workstation generates a randomized 32-bit transaction identifier $XID = \texttt{0xABCD1234}$, embeds its burned-in Ethernet MAC address (\texttt{52:54:00:12:34:56}), sets its client IP \texttt{ciaddr = 0.0.0.0}, and serializes a 300-byte \texttt{BOOTREQUEST} datagram conforming to RFC 951.
+    \item \textbf{T = 0.04 ms (FCS Calculation \& Framing)}: The BDTP framing layer prepends a 16-byte \texttt{FrameHeader} with Sequence Number $1$, Protocol ID $1$ (BOOTP), and appends a 32-bit CRC-32 Frame Check Sequence.
+    \item \textbf{T = 0.12 ms (Wire Transmission \& Server Multiplex)}: The frame is transmitted over UDP to server port \texttt{6767}. The server's non-blocking \texttt{select()} loop detects readability on the BOOTP socket descriptor, receives the 316-byte frame, and validates the CRC-32 trailer (remainder $= 0$, clean).
+    \item \textbf{T = 0.20 ms (Server Lookup \& Option Synthesis)}: The server queries its static bootstrap table, maps MAC \texttt{52:54:00:12:34:56} to assigned IP \texttt{192.168.10.50}, bootloader filename \texttt{pxelinux.0}, and TFTP server \texttt{192.168.10.1}. It synthesizes RFC 1048 vendor extensions containing Magic Cookie \texttt{0x63825363}, Subnet Mask (\texttt{255.255.255.0}), Default Gateway (\texttt{192.168.10.1}), and DNS Server (\texttt{192.168.10.1}).
+    \item \textbf{T = 0.35 ms (Client Reception \& IP Binding)}: The server issues the 300-byte \texttt{BOOTREPLY}. The client verifies matching $XID = \texttt{0xABCD1234}$, extracts parameters, and temporarily binds IP \texttt{192.168.10.50}. Total round-trip time is measured at $0.35\text{ ms}$.
+\end{enumerate}
+
+\begin{lstlisting}[style=termstyle, caption=Authentic Terminal Output: BOOTP Bootstrap Execution Trace]
+================================================================================
+        MINI-PROJECT CLIENT NODE: BOOTP | DHCP | TELNET ENGINE                  
+================================================================================
+ Execution Mode          : lifecycle (Staged sequential pipeline)
+ Target Server IP Address: 127.0.0.1
+ Ports                   : BOOTP=6767, DHCP=6769, TELNET=2323
+ Error Detection Scheme  : CRC-32
+ Impairment Rates        : Loss=0, Error=0, Delay=0, ACK-Loss=0
+ Showcase Options        : StepMode=OFF, PacketDelay=0ms, VerboseHex=OFF
+ Input Transmission File : input_commands.txt
+--------------------------------------------------------------------------------
+
+[STAGE 1/4 : BOOTP NETWORK BOOTSTRAP INITIALIZATION (RFC 951 / RFC 1048)]
+  Layer: Application (Bootstrap) | Transport: UDP Port 6767
+  Role : Request bootloader filename & initial host network configuration
+--------------------------------------------------------------------------------
+  [BOOTP Request Prepared]:
+  * Client Hardware MAC   : 52:54:00:12:34:56
+  * Transaction ID (XID)  : 0xabcd1234
+  * Client Hostname       : client-workstation
+  * Serialization Length  : 300 bytes (RFC 951 compliant)
+  [Channel] CLEAN | Seq #1 (BOOTP) forwarded successfully
+  [BOOTP SUCCESS] Valid BOOTREPLY Received in 0.35 ms!
+BOOTP REPLY
+  - Opcode       : 2 (BOOTREPLY)
+  - Hardware     : Ethernet (MAC: 52:54:00:12:34:56)
+  - Trans. ID    : 0xABCD1234
+  - Client IP    : 0.0.0.0
+  - Assigned IP  : 192.168.10.50
+  - Server IP    : 192.168.10.1
+  - Gateway IP   : 0.0.0.0
+  - Boot File    : pxelinux.0
+  - Server Name  : bootp-srv.campus.net
+  - Subnet Mask  : 255.255.255.0
+  - Router DefGW : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+\end{lstlisting}
+
+\subsection{Dry Run 2: DHCP 4-Way DORA Lease Negotiation (UDP Port 6769)}
+\paragraph{Chronological Execution Flow:}
+\begin{enumerate}
+    \item \textbf{Phase 1 (DHCPDISCOVER)}: The client transitions to state \texttt{SELECTING} and broadcasts a \texttt{DHCPDISCOVER} datagram with randomized $XID = \texttt{0x5678ABCD}$ and Option 55 parameter requests over UDP port \texttt{6769}.
+    \item \textbf{Phase 2 (DHCPOFFER)}: Server daemon inspects its managed dynamic lease pool (\texttt{192.168.10.100}--\texttt{192.168.10.200}), finds \texttt{192.168.10.100} unassigned, reserves it tentatively, and constructs \texttt{DHCPOFFER} specifying lease duration $7200\text{ s}$, renewal timer $T_1 = 3600\text{ s}$, rebinding timer $T_2 = 6300\text{ s}$, and Server ID \texttt{192.168.10.1}. Received by client in $0.18\text{ ms}$.
+    \item \textbf{Phase 3 (DHCPREQUEST)}: Client transitions to \texttt{REQUESTING} and broadcasts a request for \texttt{192.168.10.100} (Server ID \texttt{192.168.10.1}).
+    \item \textbf{Phase 4 (DHCPACK)}: Server commits binding into persistent state and returns \texttt{DHCPACK}. The client receives confirmation in $0.12\text{ ms}$ and transitions to \texttt{BOUND}.
+\end{enumerate}
+
+\begin{lstlisting}[style=termstyle, caption=Authentic Terminal Output: DHCP 4-Way DORA Negotiation Trace]
+[STAGE 2/4 : DHCP 4-WAY DORA LEASE ACQUISITION (RFC 2131 / RFC 2132)]
+  Layer: Application (Host Config) | Transport: UDP Port 6769
+  State Flow: INIT -> DISCOVER -> OFFER -> REQUEST -> ACK -> BOUND
+--------------------------------------------------------------------------------
+  [DHCP Phase 1/4] Disagreeing on Static IP -> Broadcasting DHCPDISCOVER...
+  [Channel] CLEAN | Seq #10 (DHCP) forwarded successfully
+  [DHCP Phase 2/4 SUCCESS] DHCPOFFER Received in 0.18 ms!
+DHCPOFFER
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : 192.168.10.100
+  - Server ID    : 192.168.10.1
+  - Subnet Mask  : 255.255.255.0
+  - Default GW   : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Domain       : lab.cse.ju
+
+  [DHCP Phase 3/4] Requesting Offered Lease -> Sending DHCPREQUEST for 192.168.10.100...
+  [Channel] CLEAN | Seq #11 (DHCP) forwarded successfully
+  [DHCP Phase 4/4 SUCCESS] DHCPACK Received! Bound IP: 192.168.10.100 in 0.12 ms!
+DHCPACK
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : 192.168.10.100
+  - Server ID    : 192.168.10.1
+  - Subnet Mask  : 255.255.255.0
+  - Default GW   : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Domain       : lab.cse.ju
+\end{lstlisting}
+
+\subsection{Dry Run 3: TELNET Interactive Terminal Session \& Stop-and-Wait ARQ}
+\paragraph{Chronological Execution Flow:}
+\begin{enumerate}
+    \item \textbf{TCP Connection \& Handshake}: Client initiates a standard TCP 3-way handshake to server port \texttt{2323}. The connection establishes in $0.08\text{ ms}$.
+    \item \textbf{NVT Option Negotiation}: Server sends initial option probes (\texttt{IAC DO TTYPE}, \texttt{IAC WILL ECHO}, \texttt{IAC DO SGA}). Client parser consumes sequences, confirms options via symmetric replies (\texttt{IAC WILL TTYPE}, \texttt{IAC DO ECHO}, \texttt{IAC WILL SGA}), and displays the server welcome banner.
+    \item \textbf{Remote Shell Execution}: Client streams commands from the input script:
+    \begin{itemize}
+        \item \texttt{network\_info}: Server prints merged BOOTP (\texttt{192.168.10.50}) and DHCP (\texttt{192.168.10.100}) telemetry.
+        \item \texttt{calc 1024 * 768}: Server evaluates expression and returns \texttt{786432}.
+        \item \texttt{calc 500 / 25}: Server evaluates integer division and returns \texttt{20}.
+        \item \texttt{ping}: Server responds with \texttt{PONG! Network socket latency < 0.5 ms}.
+    \end{itemize}
+    \item \textbf{Stop-and-Wait ARQ Payload Streaming}: The client transmits data frames \#110 through \#114. For each frame, the sender blocks waiting for positive acknowledgment. Inbound ACKs arrive within $0.25\text{ ms}$ to $0.48\text{ ms}$, confirming reliable, ordered delivery before the session closes via \texttt{exit}.
+\end{enumerate}
+
+\begin{lstlisting}[style=termstyle, caption=Authentic Terminal Output: TELNET Session Execution Trace]
+[STAGE 3/4 : TELNET APPLICATION SESSION (RFC 854 / RFC 855)]
+  Layer: Application (NVT Terminal) | Transport: TCP Port 2323
+  Features: 3-Way NVT Option Negotiation, ARQ Stop-and-Wait Data Streaming
+--------------------------------------------------------------------------------
+  [TCP 3-Way Handshake] Initiating SYN to 127.0.0.1:2323...
+  [TELNET TCP ESTABLISHED] Connected in 0.08 ms!
+  [TELNET Option Negotiation]: Received NVT Option Probes (391 bytes)
+  [TELNET Options Negotiated] IAC WILL TTYPE | IAC DO ECHO | IAC DO SGA
+  [Transmission Script]: Loaded 17 records/commands from input_commands.txt
+
+  [Channel] CLEAN | Seq #100 (TELNET-CTRL) forwarded successfully
+  [Remote Exec Reply]:
+TELNET REMOTE SHELL COMMAND REFERENCE:
+  help                      : Display this help manual
+  network_info              : Query BOOTP & DHCP assigned networking configurations
+  status                    : Show server health, uptime, and resource telemetry
+  ping                      : Test round-trip latency
+  echo <message>            : Echo message back through remote terminal
+  calc <arg1> <op> <arg2>   : Perform server-side arithmetic (+, -, *, /)
+  upload <file> <bytes>     : Stream data packet payload over Telnet session
+  stats                     : Show real-time session execution metrics
+  exit | quit               : Terminate the Telnet session gracefully
+
+  [Channel] CLEAN | Seq #101 (TELNET-CTRL) forwarded successfully
+  [Remote Exec Reply]:
+========================================================
+     NETWORK SUBSYSTEM CONFIGURATION (BOOTP + DHCP)     
+========================================================
+  Client Hardware MAC : 52:54:00:12:34:56
+  BOOTP Initial IP    : 192.168.10.50
+  DHCP Leased IP      : 192.168.10.100
+  Network Boot File   : pxelinux.0
+  Default Gateway     : 192.168.10.1
+  Primary DNS Server  : 192.168.10.1
+  Lease Time Remaining: 7200 seconds
+========================================================
+
+  [Channel] CLEAN | Seq #104 (TELNET-CTRL) forwarded successfully
+  [Remote Exec Reply]:
+1024 * 768 = 786432
+  [Channel] CLEAN | Seq #105 (TELNET-CTRL) forwarded successfully
+  [Remote Exec Reply]:
+500 / 25 = 20
+
+  [Channel] CLEAN | Seq #110 (TELNET-DATA) forwarded successfully
+    [TELNET ACK #110] Confirmed in 0.48 ms
+  [Channel] CLEAN | Seq #111 (TELNET-DATA) forwarded successfully
+    [TELNET ACK #111] Confirmed in 0.26 ms
+  [Channel] CLEAN | Seq #112 (TELNET-DATA) forwarded successfully
+    [TELNET ACK #112] Confirmed in 0.25 ms
+  [Channel] CLEAN | Seq #113 (TELNET-DATA) forwarded successfully
+    [TELNET ACK #113] Confirmed in 0.30 ms
+  [Channel] CLEAN | Seq #114 (TELNET-DATA) forwarded successfully
+    [TELNET ACK #114] Confirmed in 0.37 ms
+  [Channel] CLEAN | Seq #116 (TELNET-CTRL) forwarded successfully
+  [Remote Exec Reply]:
+BYE: Terminating Telnet session. Connection closing...
+\end{lstlisting}
+
+\subsection{Dry Run 4: DHCP Lease Teardown \& Address Reclamation}
+Upon graceful session exit, the client transmits an RFC 2131 Section 3.1.6 \texttt{DHCPRELEASE} packet. The server processes the release, reclaims \texttt{192.168.10.100} back to its pool, and closes all IPC descriptors cleanly:
+
+\begin{lstlisting}[style=termstyle, caption=Authentic Terminal Output: DHCP Lease Teardown Trace]
+[STAGE 4/4 : DHCP LEASE TEARDOWN & CLEANUP (RFC 2131 Section 3.1.6)]
+  Layer: Application (Host Teardown) | Transport: UDP Port 6769
+  Action: Unicast DHCPRELEASE -> Gracefully Return IP to Server Pool
+--------------------------------------------------------------------------------
+  >>> Transmitting DHCPRELEASE for IP: 192.168.10.100 (Client MAC: 52:54:00:12:34:56) <<<
+  [DHCP Release Confirmed] IP 192.168.10.100 returned to Server Pool.
+\end{lstlisting}
+
+\subsection{Dry Run 5: Network Impairment, ARQ Timeout Recovery \& CRC Detection}
+To verify the error resiliency of our protocol stack, we executed the simulation with active physical impairments ($p_{\text{loss}} = 0.15$, $p_{\text{error}} = 0.10$, Scheme = CRC-32). The terminal log below demonstrates:
+\begin{enumerate}
+    \item \textbf{Packet Loss \& Timeout}: Frame loss causes the $400\text{ ms}$ socket receive timer to expire. The sender triggers automatic retransmission (Attempt 2) and succeeds.
+    \item \textbf{Bit Noise \& FCS Rejection}: Bit inversion at bit pos 248 invalidates the CRC-32 trailer. The server discards the corrupted frame and transmits a \texttt{NACK}.
+    \item \textbf{Immediate Retransmission}: The client processes the NACK and immediately retransmits the frame cleanly without stalling the session.
+\end{enumerate}
+
+\begin{lstlisting}[style=termstyle, caption={Authentic Terminal Output: Impairment, Loss Recovery, and Error Detection}]
+  [DHCP Timeout] Retransmitting DHCPREQUEST (Attempt 2)...
+  [Channel] CLEAN | Seq #11 (DHCP) forwarded successfully
+  [DHCP Phase 4/4 SUCCESS] DHCPACK Received! Bound IP: 192.168.10.100
+
+  [TELNET Retransmit] Frame #100 (Attempt 2)...
+  [Channel] PACKET CORRUPTED | Seq #107 (TELNET-CTRL) -> Single-bit flipped at bit pos 248 (byte 31, bit 0)
+    [TELNET NACK] Server rejected corrupted frame #107
+    [TELNET Retransmit] Frame #107 (Attempt 2)...
+  [Channel] CLEAN | Seq #107 (TELNET-CTRL) forwarded successfully
+    [TELNET Retransmit] Frame #109 (Attempt 2)...
+    [TELNET Retransmit] Frame #114 (Attempt 2)...
+  [Channel] PACKET CORRUPTED | Seq #116 (TELNET-CTRL) -> Single-bit flipped at bit pos 22 (byte 2, bit 6)
+    [TELNET NACK] Server rejected corrupted frame #116
+    [TELNET Retransmit] Frame #116 (Attempt 2)...
+  [Channel] CLEAN | Seq #116 (TELNET-CTRL) forwarded successfully
+  * Total Injected Errors  : 2
+  * Detected by FCS/NACK   : 2 (100.0% Detection Efficiency)
+\end{lstlisting}
+
+% =============================================================
+% SECTION 8: EMPIRICAL RESULTS & BENCHMARKS
+% =============================================================
+\section{Empirical Results, Performance Benchmarks \& Plots}
+
+\subsection{Multi-Protocol End-to-End Ladder Diagram}
+Figure~\ref{fig:protocol_stack} presents the sequence ladder diagram generated from the test suite, illustrating all packet exchanges, ports, and lease bindings without overlap.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{plots/fig1_protocol_stack_flow.png}
+\caption{End-to-End Multi-Layer Protocol Flow: BOOTP $\to$ DHCP DORA $\to$ TELNET RFC 854 Session.}
+\label{fig:protocol_stack}
+\end{figure}
+
+\subsection{Error Detection Matrix Benchmark ($7 \times 7$ Combinations)}
+Table~\ref{tab:bench_matrix} details the empirical detection rates measured across 200 trials per cell (1,400 total trials). Bound strictly by \texttt{\textbackslash linewidth} using \texttt{resizebox}:
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Scheme} & \textbf{Single-Bit} & \textbf{Two-Isolated} & \textbf{Odd-Bits} & \textbf{Burst-8} & \textbf{CS-Blind} & \textbf{CRC-Blind} & \textbf{Random-Byte} \\
+\midrule
+16-bit Checksum   & 100.0\% & 98.5\%  & 100.0\% & 100.0\% & \textbf{0.0\%}  & 100.0\%         & 100.0\% \\
+CRC-8             & 100.0\% & 99.0\%  & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 99.0\% \\
+CRC-10            & 100.0\% & 99.5\%  & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
+CRC-16            & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
+CRC-32            & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & \textbf{0.0\%}  & 100.0\% \\
+Hamming SEC-DED   & 100.0\% & 100.0\% & 100.0\% & 97.0\%  & 100.0\%         & 100.0\%         & 96.0\% \\
+2D Parity (LRC)   & 100.0\% & 100.0\% & 100.0\% & 100.0\% & 100.0\%         & 100.0\%         & 100.0\% \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Empirical Detection Rates Across 49 Error Scheme and Injection Combinations (200 Trials Each).}
+\label{tab:bench_matrix}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{plots/fig2_error_detection_heatmap.png}
+\caption{Detection Efficacy Heatmap: Explicitly Highlighting the Checksum Blind Spot and CRC Blind Spot.}
+\label{fig:heatmap}
+\end{figure}
+
+\subsection{Flow Control Efficiency vs Channel Packet Loss}
+Table~\ref{tab:eff_data} and Figure~\ref{fig:loss_plot} demonstrate the throughput efficiency $\eta = \frac{N_{\text{unique}}}{N_{\text{total}}} \times 100\%$ under increasing channel loss rates:
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{0.82\linewidth}{!}{%
+\begin{tabular}{ccccc}
+\toprule
+\textbf{Channel Loss Rate} & \textbf{Unique Frames} & \textbf{Total Transmitted} & \textbf{Retransmissions} & \textbf{Efficiency (\%)} \\
+\midrule
+0\%   & 50 & 50 & 0  & 100.00\% \\
+5\%   & 50 & 52 & 2  & 96.15\% \\
+10\%  & 50 & 57 & 7  & 87.72\% \\
+15\%  & 50 & 57 & 7  & 87.72\% \\
+20\%  & 50 & 62 & 12 & 80.65\% \\
+30\%  & 50 & 74 & 24 & 67.57\% \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Throughput Efficiency vs. Channel Loss Rate (Stop-and-Wait ARQ).}
+\label{tab:eff_data}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{plots/fig3_efficiency_vs_loss_rate.png}
+\caption{Empirical Throughput Efficiency Curve vs. Theoretical Bound $\eta \approx (1 - p)$.}
+\label{fig:loss_plot}
+\end{figure}
+
+\subsection{Latency, RTT Distribution \& Network Jitter}
+Figure~\ref{fig:rtt_plot} displays the measured round-trip times and inter-arrival jitter under clean versus delayed network channels. Under clean local socket execution, mean RTT is $0.265\text{ ms}$ with standard deviation $\sigma = 0.113\text{ ms}$ and RFC 3550 jitter $J = 0.131\text{ ms}$. Under channel impairment with artificial delay, RTT increases to $120\text{ ms}$ with jitter exceeding $45\text{ ms}$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\linewidth]{plots/fig4_rtt_latency_and_jitter.png}
+\caption{Round-Trip Time (RTT) Distribution and RFC 3550 Jitter Telemetry.}
+\label{fig:rtt_plot}
+\end{figure}
+
+\subsection{Cross-Layer Telemetry Dashboard \& Real-Time Execution Statistics}
+At the conclusion of the sequential host lifecycle, the client node computes and visualizes the complete cross-layer performance profile across eight distinct analytical domains, including wire goodput, framing overhead, ARQ efficiency, latency distribution, and ASCII telemetry gauges. Listing~\ref{lst:dashboard} presents the verbatim terminal dashboard output:
+
+\begin{lstlisting}[style=termstyle, caption={Verbatim Client Cross-Layer Telemetry Dashboard}, label=lst:dashboard]
+================================================================================
+ CLIENT COMPLETE END-OF-RUN REPORT: CROSS-LAYER TELEMETRY DASHBOARD             
+================================================================================
+ [1] SESSION & RUNTIME ENVIRONMENT
+  * Target Execution Role  : Client Node (lifecycle)
+  * Total Elapsed Runtime  : 399.38 ms (0.3994 seconds)
+  * Wall-Clock Timestamps  : T_start=73116922 ms | T_end=73117322 ms
+--------------------------------------------------------------------------------
+ [2] PROTOCOL STACK & TRANSPORT LAYER DISSECTION
+  * BOOTP (RFC 951/1048)   : 2    frames  | 632    wire bytes | Transport: UDP (Port 6767)
+  * DHCP DORA (RFC 2131)   : 5    frames  | 1596   wire bytes | Transport: UDP (Port 6769)
+  * TELNET App (RFC 854)   : 34   frames  | 3233   wire bytes | Transport: TCP (Port 2323)
+  * Transport Distribution : 7 UDP datagrams vs 34 TCP segments
+--------------------------------------------------------------------------------
+ [3] WIRE TRAFFIC VOLUME, GOODPUT & OVERHEAD ANALYSIS
+  * Gross Wire Transferred : 5461 bytes (5.33 KB)
+  * Net Payload Data (L7)  : 4805 bytes (4.69 KB)
+  * Framing Overhead (L2)  : 656 bytes (16-byte BDTP FrameHeader)
+  * Framing Overhead Ratio : 12.01 %
+  * Gross Wire Throughput  : 109.39 Kbps (13.67 KB/sec)
+  * Net Effective Goodput  : 96.25 Kbps (12.03 KB/sec)
+--------------------------------------------------------------------------------
+ [4] ARQ FLOW CONTROL & PACKET RELIABILITY (STOP-AND-WAIT)
+  * Total Transmissions    : 21 packets (initial + retries)
+  * Inbound Received       : 20 packets
+  * Unique Frames Sent     : 21 packets
+  * ARQ Retransmissions    : 0
+  * Retransmission Overhead: 0.00 %
+  * Stop-and-Wait Success  : 100.00 %
+--------------------------------------------------------------------------------
+ [5] PHYSICAL CHANNEL IMPAIRMENTS ENCOUNTERED
+  * Packets Dropped (Loss) : 0
+  * Bit Corruptions (Noise): 0
+  * Jitter / Delay Events  : 0
+--------------------------------------------------------------------------------
+ [6] ERROR DETECTION & FCS VERIFICATION VERDICT
+  * Total Injected Errors  : 0
+  * Detected by FCS/NACK   : 0
+  * Undetected (Blind Spots: 0
+  * Channel Condition      : 100% CLEAN (Zero bit corruption injected)
+--------------------------------------------------------------------------------
+ [7] LATENCY, RTT DISTRIBUTION & NETWORK JITTER (RFC 3550)
+  * Minimum RTT (Best)     : 0.123 ms
+  * Maximum RTT (Worst)    : 0.481 ms
+  * Mean / Average RTT     : 0.274 ms
+  * Median RTT             : 0.259 ms
+  * RTT Standard Deviation : 0.078 ms (sigma)
+  * RFC 3550 Inter-Jitter  : 0.081 ms
+  * Total Timing Samples   : 20 round-trip probes
+--------------------------------------------------------------------------------
+ [8] VISUAL TRANSMISSION TELEMETRY GAUGES
+  * Throughput Efficiency  : 100.00 %
+    [##################################################] 100.00 %
+
+  * Frame Allocation Breakdown:
+    Unique Frames    : [==================================================] 100 %
+    Retransmissions  : [                                                  ] 0 %
+
+  * Wire Byte Distribution (BOOTP / DHCP / TELNET):
+    Bytes on Wire    : [BBBBBDDDDDDDDDDDDDDTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT]
+    Legend: [B] BOOTP: 11.6% | [D] DHCP: 29.2% | [T] TELNET: 59.2%
+================================================================================
+\end{lstlisting}
+
+\subsection{Bit-Exact File Reconstruction Verification}
+During the Telnet session, the client streamed the structured commands payload from disk to the server. The server assembled the data in \texttt{server\_received\_payload.txt}. A bitwise diff verification:
+\begin{lstlisting}[language=bash]
+diff -s server_received_payload.txt sample_payload.txt
+\end{lstlisting}
+confirmed $100.0\%$ bit-exact equality, verifying that Stop-and-Wait ARQ, CRC-32 validation, and TCP socket buffering guaranteed complete data integrity without a single lost byte.
+
+% =============================================================
+% SECTION 9: COMPARATIVE DISCUSSIONS & PROTOCOL TRADEOFFS
+% =============================================================
+\section{Comparative Discussions \& Protocol Tradeoffs}
+
+\subsection{BOOTP vs. DHCP: Architectural Evolution}
+BOOTP was designed for an era of static computing where network administrators pre-configured every workstation's MAC address in a server table (\texttt{/etc/bootptab}). This model fails in modern dynamic networks where laptops and mobile devices frequently enter and leave subnets. DHCP resolved this through dynamic leasing, automatic reclamation, and option extensibility, while maintaining backwards compatibility with BOOTP packet layouts.
+
+\subsection{In-Band vs. Out-of-Band Session Signaling}
+TELNET adopts in-band signaling via the \texttt{IAC} (\texttt{0xFF}) escaping prefix. While simple, in-band signaling imposes processing overhead on every data byte and requires byte-doubling whenever data byte \texttt{0xFF} is transmitted. Modern protocols (such as SSH) utilize distinct packet headers and secure out-of-band multiplexing to separate terminal control from user data streams.
+
+\subsection{Computational Complexity: Checksum vs. CRC vs. Hamming}
+\begin{itemize}
+    \item \textbf{16-Bit Checksum}: $\mathcal{O}(N)$ arithmetic additions with carries. Highly optimized in CPU hardware, but mathematically blind to balanced word alterations.
+    \item \textbf{CRC-32}: $\mathcal{O}(N)$ bitwise shifts and XOR operations. Incurring higher computation unless accelerated by hardware instructions (e.g., Intel CRC32), but provides near-perfect error detection for all single, odd, and burst patterns up to 32 bits.
+    \item \textbf{Hamming SEC-DED}: Provides real-time forward error correction without retransmission, but imposes significant bit-overhead (roughly $30\%$ framing overhead) compared to $16$-byte FCS trailers.
+\end{itemize}
+
+% =============================================================
+% SECTION 10: CROSS-DEVICE EXECUTION GUIDE
+% =============================================================
+\section{Cross-Device Deployment \& Execution Guide}
+
+The implementation operates seamlessly across separate physical computers connected over a local network.
+
+\subsection{Compilation}
 \begin{lstlisting}[language=bash]
 cd CN_Lab_Grp_Project
 make clean && make all
 \end{lstlisting}
 
-\subsection{Execution on Separate Physical Devices}
-Assume the Server machine has LAN IP \texttt{192.168.1.50} and the Client machine has LAN IP \texttt{192.168.1.60}.
-
-\paragraph{On Server Machine (\texttt{192.168.1.50}):}
+\subsection{Execution Commands}
+\paragraph{Step 1: Start Server on Machine 1 (\texttt{192.168.1.50}):}
 \begin{lstlisting}[language=bash]
 ./server --ip 0.0.0.0 --bootp-port 6767 --dhcp-port 6769 --telnet-port 2323 --scheme 5
 \end{lstlisting}
 
-\paragraph{On Client Machine (\texttt{192.168.1.60}):}
+\paragraph{Step 2: Start Client on Machine 2 (\texttt{192.168.1.60}):}
 \begin{lstlisting}[language=bash]
-./client --server-ip 192.168.1.50 --bootp-port 6767 --dhcp-port 6769 --telnet-port 2323 \
-         --scheme 5 --input input_commands.txt
+# Interactive Step-by-Step Viva Mode (Recommended):
+./client --server-ip 192.168.1.50 --mode lifecycle --step --input input_commands.txt
+
+# Or with human-readable pacing delay:
+./client --server-ip 192.168.1.50 --mode lifecycle --delay 250 --input input_commands.txt
 \end{lstlisting}
 
-\subsection{Running the Automated Test Harness}
-\begin{lstlisting}[language=bash]
-bash run_all_tests.sh
-\end{lstlisting}
-
-% ==============================================================================
-% 7. CONCLUSION
-% ==============================================================================
+% =============================================================
+% SECTION 11: CONCLUSION
+% =============================================================
 \section{Conclusion}
 
-The Mini Group Project successfully achieves a high-fidelity, standards-compliant implementation of three foundational network protocols:
+This Mini Group Project successfully demonstrates the complete multi-layer protocol lifecycle of modern computer networking:
 \begin{enumerate}
-    \item \textbf{BOOTP} reliably boots diskless hosts and provides initial network parameters.
-    \item \textbf{DHCP} dynamically leases and manages IP configurations through the 4-way DORA sequence.
-    \item \textbf{TELNET} establishes an authenticated, interactive remote virtual terminal application session over TCP.
+    \item \textbf{BOOTP} provides initial bare-metal bootstrap parameter discovery over UDP.
+    \item \textbf{DHCP} dynamically leases and manages network configuration through the complete 4-way DORA state machine.
+    \item \textbf{TELNET} establishes an authenticated, interactive remote virtual terminal application session over TCP, successfully transmitting commands and data streams with Stop-and-Wait ARQ.
+    \item \textbf{Error Resiliency}: Seven error detection algorithms were implemented and benchmarked, experimentally confirming theoretical detection bounds and mathematical blind spots across 1,400 trials.
+    \item \textbf{Practical Engineering}: Multi-port POSIX socket programming, non-blocking \texttt{select()} I/O event multiplexing, and cross-device network execution ensure real-world applicability.
 \end{enumerate}
-The integration of seven error detection schemes, algorithmic error injection, mathematical blind spot demonstrations, channel impairment simulation, and Stop-and-Wait ARQ provides an educational and rigorous demonstration of computer networking principles across the Network, Transport, and Application layers.
 
 \end{document}

@@ -1,0 +1,225 @@
+[1;36m================================================================================
+        MINI-PROJECT CLIENT NODE: BOOTP | DHCP | TELNET ENGINE                  
+================================================================================
+[0m Execution Mode          : [1;33mlifecycle[0m (Staged sequential pipeline)
+ Target Server IP Address: [1;32m127.0.0.1[0m
+ Ports                   : BOOTP=6767, DHCP=6769, TELNET=2323
+ Error Detection Scheme  : [1;35mCRC-32[0m
+ Impairment Rates        : Loss=0, Error=0, Delay=0, ACK-Loss=0
+ Showcase Options        : StepMode=OFF, PacketDelay=0ms, VerboseHex=OFF
+ Input Transmission File : [33m/home/diptarko-bhattacharjee/Desktop/Diptarko/Semester_Material/Sem_5/CN/CN_Lab/CN_Lab_Grp_Project/input_commands.txt[0m
+--------------------------------------------------------------------------------
+
+[1;36m┌──────────────────────────────────────────────────────────────────────────────┐
+│ STAGE 1 / 4 : BOOTP NETWORK BOOTSTRAP INITIALIZATION (RFC 951 / RFC 1048)    │
+│ Layer: Application (Bootstrap) | Transport: UDP Port 6767                   │
+│ Role : Request bootloader filename & initial host network configuration     │
+└──────────────────────────────────────────────────────────────────────────────┘
+[0m[1;37m  [BOOTP Request Prepared]:
+[0m  * Client Hardware MAC   : 52:54:00:12:34:56
+  * Transaction ID (XID)  : 0xabcd1234
+  * Client Hostname       : client-workstation
+  * Serialization Length  : 300 bytes (RFC 951 compliant)
+  [Channel] [1;32mCLEAN[0m | Seq #1 (BOOTP) forwarded successfully
+[1;32m  [BOOTP SUCCESS] Valid BOOTREPLY Received in 0.35 ms!
+[0m[1mBOOTP REPLY[0m
+  - Opcode       : 2 (BOOTREPLY)
+  - Hardware     : Ethernet (MAC: 52:54:00:12:34:56)
+  - Trans. ID    : 0xABCD1234
+  - Client IP    : 0.0.0.0
+  - Assigned IP  : [32m192.168.10.50[0m
+  - Server IP    : 192.168.10.1
+  - Gateway IP   : 0.0.0.0
+  - Boot File    : [36mpxelinux.0[0m
+  - Server Name  : bootp-srv.campus.net
+  - Subnet Mask  : 255.255.255.0
+  - Router DefGW : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+
+[1;36m┌──────────────────────────────────────────────────────────────────────────────┐
+│ STAGE 2 / 4 : DHCP 4-WAY DORA LEASE ACQUISITION (RFC 2131 / RFC 2132)         │
+│ Layer: Application (Host Config) | Transport: UDP Port 6769                  │
+│ State Flow: INIT -> DISCOVER -> OFFER -> REQUEST -> ACK -> BOUND             │
+└──────────────────────────────────────────────────────────────────────────────┘
+[0m[1;37m  [DHCP Phase 1/4] Disagreeing on Static IP -> Broadcasting DHCPDISCOVER...
+[0m  [Channel] [1;32mCLEAN[0m | Seq #10 (DHCP) forwarded successfully
+[1;32m  [DHCP Phase 2/4 SUCCESS] DHCPOFFER Received in 0.18 ms!
+[0m[1mDHCPOFFER[0m
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : [32m192.168.10.100[0m
+  - Server ID    : 192.168.10.1
+  - Subnet Mask  : 255.255.255.0
+  - Default GW   : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Domain       : lab.cse.ju
+[1;37m  [DHCP Phase 3/4] Requesting Offered Lease -> Sending DHCPREQUEST for 192.168.10.100...
+[0m  [Channel] [1;32mCLEAN[0m | Seq #11 (DHCP) forwarded successfully
+[1;32m  [DHCP Phase 4/4 SUCCESS] DHCPACK Received! Bound IP: 192.168.10.100 in 0.12 ms!
+[0m[1mDHCPACK[0m
+  - Client MAC   : 52:54:00:12:34:56
+  - Trans. ID    : 0x5678ABCD
+  - Client IP    : 0.0.0.0
+  - Assigned/Off : [32m192.168.10.100[0m
+  - Server ID    : 192.168.10.1
+  - Subnet Mask  : 255.255.255.0
+  - Default GW   : 192.168.10.1
+  - DNS Server   : 192.168.10.1
+  - Lease Time   : 7200 s (T1=3600s, T2=6300s)
+  - Domain       : lab.cse.ju
+
+[1;36m┌──────────────────────────────────────────────────────────────────────────────┐
+│ STAGE 3 / 4 : TELNET APPLICATION SESSION (RFC 854 / RFC 855)                  │
+│ Layer: Application (NVT Terminal) | Transport: TCP Port 2323                 │
+│ Features: 3-Way NVT Option Negotiation, ARQ Stop-and-Wait Data Streaming     │
+└──────────────────────────────────────────────────────────────────────────────┘
+[0m[1;37m  [TCP 3-Way Handshake] Initiating SYN to 127.0.0.1:2323...
+[0m[1;32m  [TELNET TCP ESTABLISHED] Connected in 0.08 ms!
+[0m[36m  [TELNET Option Negotiation]: Received NVT Option Probes (391 bytes)
+[0m[1;32m  [TELNET Options Negotiated] IAC WILL TTYPE | IAC DO ECHO | IAC DO SGA
+[0m[1;37m  [Transmission Script]: Loaded 17 records/commands from /home/diptarko-bhattacharjee/Desktop/Diptarko/Semester_Material/Sem_5/CN/CN_Lab/CN_Lab_Grp_Project/input_commands.txt
+
+[0m  [Channel] [1;32mCLEAN[0m | Seq #100 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1;37mTELNET REMOTE SHELL COMMAND REFERENCE:
+[0m  help                      : Display this help manual
+  network_info              : Query BOOTP & DHCP assigned networking configurations
+  status                    : Show server health, uptime, and resource telemetry
+  ping                      : Test round-trip latency
+  echo <message>            : Echo message back through remote terminal
+  calc <arg1> <op> <arg2>   : Perform server-side arithmetic (+, -, *, /)
+  upload <file> <bytes>     : Stream data packet payload over Telnet session
+  stats                     : Show real-time session execution metrics
+  exit | quit               : Terminate the Telnet session gracefully
+  [Channel] [1;32mCLEAN[0m | Seq #101 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1;36m========================================================
+     NETWORK SUBSYSTEM CONFIGURATION (BOOTP + DHCP)     
+========================================================
+[0m  Client Hardware MAC : [33m52:54:00:12:34:56[0m
+  BOOTP Initial IP    : 192.168.10.50
+  DHCP Leased IP      : [32m192.168.10.100[0m
+  Network Boot File   : [36mpxelinux.0[0m
+  Default Gateway     : 192.168.10.1
+  Primary DNS Server  : 192.168.10.1
+  Lease Time Remaining: 7200 seconds
+[1;36m========================================================
+[0m  [Channel] [1;32mCLEAN[0m | Seq #102 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1;32m[Server Status: OK][0m
+  Uptime            : System online (active session)
+  Protocols Active  : BOOTP (UDP:6767), DHCP (UDP:6769), TELNET (TCP:2323)
+  Commands Handled  : 3
+  [Channel] [1;32mCLEAN[0m | Seq #103 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1;32mPONG! Network socket latency < 0.5 ms[0m
+  [Channel] [1;32mCLEAN[0m | Seq #104 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1m1024 * 768 = [32m786432[0m
+  [Channel] [1;32mCLEAN[0m | Seq #105 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1m500 / 25 = [32m20[0m
+  [Channel] [1;32mCLEAN[0m | Seq #106 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[JU-CSE-CN-LAB] Simulating Network, Transport and Application Protocols
+  [Channel] [1;32mCLEAN[0m | Seq #107 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[BOOTP] Bootstrap Protocol executed successfully over UDP port 6767
+  [Channel] [1;32mCLEAN[0m | Seq #108 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[DHCP] Dynamic Host Configuration Protocol DORA completed over UDP port 6769
+  [Channel] [1;32mCLEAN[0m | Seq #109 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[TELNET] Application layer NVT terminal session running over TCP port 2323
+  [Channel] [1;32mCLEAN[0m | Seq #110 (TELNET-DATA) forwarded successfully
+[1;32m    [TELNET ACK #110] Confirmed in 0.48 ms
+[0m  [Channel] [1;32mCLEAN[0m | Seq #111 (TELNET-DATA) forwarded successfully
+[1;32m    [TELNET ACK #111] Confirmed in 0.26 ms
+[0m  [Channel] [1;32mCLEAN[0m | Seq #112 (TELNET-DATA) forwarded successfully
+[1;32m    [TELNET ACK #112] Confirmed in 0.25 ms
+[0m  [Channel] [1;32mCLEAN[0m | Seq #113 (TELNET-DATA) forwarded successfully
+[1;32m    [TELNET ACK #113] Confirmed in 0.30 ms
+[0m  [Channel] [1;32mCLEAN[0m | Seq #114 (TELNET-DATA) forwarded successfully
+[1;32m    [TELNET ACK #114] Confirmed in 0.37 ms
+[0m  [Channel] [1;32mCLEAN[0m | Seq #115 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[1mSession Commands Executed: [33m11[0m
+  [Channel] [1;32mCLEAN[0m | Seq #116 (TELNET-CTRL) forwarded successfully
+[32m  [Remote Exec Reply]:
+[0m[33mBYE: Terminating Telnet session. Connection closing...
+[0m
+[1;36m┌──────────────────────────────────────────────────────────────────────────────┐
+│ STAGE 4 / 4 : DHCP LEASE TEARDOWN & CLEANUP (RFC 2131 Section 3.1.6)         │
+│ Layer: Application (Host Teardown) | Transport: UDP Port 6769                │
+│ Action: Unicast DHCPRELEASE -> Gracefully Return IP to Server Pool           │
+└──────────────────────────────────────────────────────────────────────────────┘
+[0m[1;33m  >>> Transmitting DHCPRELEASE for IP: 192.168.10.100 (Client MAC: 52:54:00:12:34:56) <<<
+[0m[1;32m  [DHCP Release Confirmed] IP 192.168.10.100 returned to Server Pool.
+
+[0m
+[1;36m╔════════════════════════════════════════════════════════════════════════════════╗
+║ CLIENT COMPLETE END-OF-RUN REPORT: CROSS-LAYER TELEMETRY DASHBOARD             ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+[0m[1;37m [1] SESSION & RUNTIME ENVIRONMENT
+[0m  * Target Execution Role  : [1;33mClient Node (lifecycle)[0m
+  * Total Elapsed Runtime  : [1;32m399.38 ms[0m (0.3994 seconds)
+  * Wall-Clock Timestamps  : T_start=73116922 ms | T_end=73117322 ms
+--------------------------------------------------------------------------------
+[1;37m [2] PROTOCOL STACK & TRANSPORT LAYER DISSECTION
+[0m  * BOOTP (RFC 951/1048)   : 2    frames  | 632    wire bytes | Transport: UDP (Port 6767)
+  * DHCP DORA (RFC 2131)   : 5    frames  | 1596   wire bytes | Transport: UDP (Port 6769)
+  * TELNET App (RFC 854)   : 34   frames  | 3233   wire bytes | Transport: TCP (Port 2323)
+  * Transport Distribution : [36m7 UDP datagrams[0m vs [35m34 TCP segments[0m
+--------------------------------------------------------------------------------
+[1;37m [3] WIRE TRAFFIC VOLUME, GOODPUT & OVERHEAD ANALYSIS
+[0m  * Gross Wire Transferred : [1;33m5461 bytes[0m (5.33 KB)
+  * Net Payload Data (L7)  : [1;32m4805 bytes[0m (4.69 KB)
+  * Framing Overhead (L2)  : 656 bytes (16-byte BDTP FrameHeader)
+  * Framing Overhead Ratio : 12.01 %
+  * Gross Wire Throughput  : [1;36m109.39 Kbps[0m (13.67 KB/sec)
+  * Net Effective Goodput  : [1;32m96.25 Kbps[0m (12.03 KB/sec)
+--------------------------------------------------------------------------------
+[1;37m [4] ARQ FLOW CONTROL & PACKET RELIABILITY (STOP-AND-WAIT)
+[0m  * Total Transmissions    : 21 packets (initial + retries)
+  * Inbound Received       : 20 packets
+  * Unique Frames Sent     : 21 packets
+  * ARQ Retransmissions    : [32m0[0m
+  * Retransmission Overhead: 0.00 %
+  * Stop-and-Wait Success  : [1;32m100.00 %[0m
+--------------------------------------------------------------------------------
+[1;37m [5] PHYSICAL CHANNEL IMPAIRMENTS ENCOUNTERED
+[0m  * Packets Dropped (Loss) : [32m0[0m
+  * Bit Corruptions (Noise): [32m0[0m
+  * Jitter / Delay Events  : [32m0[0m
+--------------------------------------------------------------------------------
+[1;37m [6] ERROR DETECTION & FCS VERIFICATION VERDICT
+[0m  * Total Injected Errors  : 0
+  * Detected by FCS/NACK   : [1;32m0[0m
+  * Undetected (Blind Spots: [1;32m0[0m
+  * Channel Condition      : [1;32m100% CLEAN (Zero bit corruption injected)[0m
+--------------------------------------------------------------------------------
+[1;37m [7] LATENCY, RTT DISTRIBUTION & NETWORK JITTER (RFC 3550)
+[0m  * Minimum RTT (Best)     : 0.123 ms
+  * Maximum RTT (Worst)    : 0.481 ms
+  * Mean / Average RTT     : [1;33m0.274 ms[0m
+  * Median RTT             : 0.259 ms
+  * RTT Standard Deviation : 0.078 ms (sigma)
+  * RFC 3550 Inter-Jitter  : [1;36m0.081 ms[0m
+  * Total Timing Samples   : 20 round-trip probes
+--------------------------------------------------------------------------------
+[1;37m [8] VISUAL TRANSMISSION TELEMETRY GAUGES
+[0m  * Throughput Efficiency  : [1;32m100.00 %
+[0m    [[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m[32m#[0m] 100.00 %
+
+  * Frame Allocation Breakdown:
+    Unique Frames    : [[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m[36m=[0m] 100 %
+    Retransmissions  : [                                                  ] 0 %
+
+  * Wire Byte Distribution (BOOTP / DHCP / TELNET):
+    Bytes on Wire    : [[34mB[0m[34mB[0m[34mB[0m[34mB[0m[34mB[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[33mD[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m[32mT[0m]
+    Legend: [34m[B] BOOTP: 11.6%[0m | [33m[D] DHCP: 29.2%[0m | [32m[T] TELNET: 59.2%[0m
+[1;36m════════════════════════════════════════════════════════════════════════════════
+
+[0m

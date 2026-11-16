@@ -1,0 +1,11 @@
+[1;36m================================================================================
+          MINI-PROJECT MULTI-PROTOCOL SERVER DAEMON (BOOTP, DHCP, TELNET)       
+================================================================================
+[0m Binding IP Address     : [1;32m0.0.0.0[0m (Allows multi-device connections)
+ BOOTP UDP Service Port : [33m6767[0m
+ DHCP UDP Service Port  : [33m6769[0m
+ TELNET TCP Service Port: [33m2323[0m
+ Active Error Scheme    : [1;35mCRC-32[0m
+--------------------------------------------------------------------------------
+[1;32m[Server Daemon Ready] Listening for incoming network traffic...
+[0m

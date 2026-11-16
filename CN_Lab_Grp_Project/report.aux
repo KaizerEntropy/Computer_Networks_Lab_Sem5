@@ -2,38 +2,120 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
-\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction \& Problem Specification}{2}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Key Design Requirements}{2}{subsection.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Protocol Architecture \& Specifications}{3}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}BOOTP (Bootstrap Protocol — RFC 951, RFC 1048)}{3}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}DHCP (Dynamic Host Configuration Protocol — RFC 2131, RFC 2132)}{3}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}TELNET (Network Virtual Terminal — RFC 854, RFC 855)}{3}{subsection.2.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces End-to-End Protocol Flow: Sequential Execution of BOOTP, DHCP DORA, and TELNET.}}{4}{figure.1}\protected@file@percent }
-\newlabel{fig:protocol_stack}{{1}{4}{End-to-End Protocol Flow: Sequential Execution of BOOTP, DHCP DORA, and TELNET}{figure.1}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Error Detection Schemes \& Mathematical Proofs}{4}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Implemented Detection Schemes}{4}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Mathematical Blind Spot Proofs}{5}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Case 1: Checksum Blind Spot}{5}{section*.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Case 2: CRC Blind Spot}{5}{section*.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Heatmap of Error Detection Efficacy Across All Schemes and Error Types.}}{6}{figure.2}\protected@file@percent }
-\newlabel{fig:heatmap}{{2}{6}{Heatmap of Error Detection Efficacy Across All Schemes and Error Types}{figure.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Channel Impairment Modeling \& Flow Control}{6}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Channel Impairment Simulation}{6}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Stop-and-Wait ARQ Performance}{6}{subsection.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Throughput Efficiency vs Channel Packet Loss Rate.}}{7}{figure.3}\protected@file@percent }
-\newlabel{fig:efficiency}{{3}{7}{Throughput Efficiency vs Channel Packet Loss Rate}{figure.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Round-Trip Time (RTT) and Network Jitter Distribution.}}{7}{figure.4}\protected@file@percent }
-\newlabel{fig:rtt}{{4}{7}{Round-Trip Time (RTT) and Network Jitter Distribution}{figure.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Results \& Benchmark Data}{7}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Detection Matrix Benchmark Table}{7}{subsection.5.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Empirical Detection Rates Across Error Schemes (200 Trials Each)}}{8}{table.1}\protected@file@percent }
-\newlabel{tab:matrix_results}{{1}{8}{Empirical Detection Rates Across Error Schemes (200 Trials Each)}{table.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Efficiency Sweep Under Packet Loss}{8}{subsection.5.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Channel Efficiency vs Loss Rate (50 Packets Transmitted)}}{8}{table.2}\protected@file@percent }
-\newlabel{tab:loss_efficiency}{{2}{8}{Channel Efficiency vs Loss Rate (50 Packets Transmitted)}{table.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Cross-Device Deployment \& Instructions}{8}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Building the Executables}{8}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Execution on Separate Physical Devices}{8}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Running the Automated Test Harness}{9}{subsection.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{9}{section.7}\protected@file@percent }
-\gdef \@abspage@last{10}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Synthesizing Prior Laboratory Foundations}{3}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Theoretical Analysis \& Protocol Specifications}{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}BOOTP: Bootstrap Protocol (RFC 951, RFC 1048)}{4}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}Operational Motivation \& Diskless Client Architecture}{4}{subsubsection.2.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}Dual-Port UDP Architecture}{5}{subsubsection.2.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.3}BOOTP Packet Structure \& Field Breakdown}{5}{subsubsection.2.1.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces BOOTP Packet Field Specification (RFC 951 \& RFC 1048).}}{6}{table.1}\protected@file@percent }
+\newlabel{tab:bootp_layout}{{1}{6}{BOOTP Packet Field Specification (RFC 951 \& RFC 1048)}{table.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.4}Transaction Identifier (XID) Concurrent Client Discrimination}{6}{subsubsection.2.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.5}RFC 1048 Vendor Information Area \& The Magic Cookie}{7}{subsubsection.2.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.6}Architectural Limitations of BOOTP}{7}{subsubsection.2.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}DHCP: Dynamic Host Configuration Protocol (RFC 2131, RFC 2132)}{7}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}The Dynamic Lease Allocation Model}{8}{subsubsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}The 4-Way DORA Handshake Walkthrough}{8}{subsubsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.3}DHCP Timer Mechanics \& State Transitions}{9}{subsubsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.4}Graceful Teardown: DHCPRELEASE (RFC 2131 Section 3.1.6)}{9}{subsubsection.2.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}TELNET: Network Virtual Terminal Protocol (RFC 854, RFC 855)}{9}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}The Network Virtual Terminal (NVT) Abstraction}{9}{subsubsection.2.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.2}In-Band Control Signaling \& Interpret As Command (IAC) Escaping}{10}{subsubsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The Byte-Stuffing Rule:}{10}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.3}RFC 854 Command Primitives}{10}{subsubsection.2.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces TELNET RFC 854 Command Codes and Semantic Definitions.}}{11}{table.2}\protected@file@percent }
+\newlabel{tab:telnet_cmds}{{2}{11}{TELNET RFC 854 Command Codes and Semantic Definitions}{table.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.4}Symmetric 4-Verb Option Negotiation State Machine}{11}{subsubsection.2.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Loop Avoidance Invariant:}{11}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.5}Negotiated Options in Project Architecture}{12}{subsubsection.2.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.6}Application Remote Command Shell \& Stop-and-Wait ARQ Integration}{12}{subsubsection.2.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Error Detection Mathematics \& Redundancy Theory}{12}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}16-Bit Internet Checksum (RFC 1071)}{12}{subsubsection.2.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Cyclic Redundancy Check (CRC)}{13}{subsubsection.2.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.3}Extended Hamming SEC-DED Code}{13}{subsubsection.2.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.4}Two-Dimensional Parity (LRC+VRC)}{13}{subsubsection.2.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Mathematical Blind Spot Proofs}{13}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Case 1: Checksum Blind Spot (Balanced Word Modification)}{13}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Case 2: CRC Blind Spot (Polynomial Multiple Perturbation)}{14}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Inter-Process Communication \& Channel Architecture}{14}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Hybrid POSIX Socket Transport}{14}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Non-Blocking Event Multiplexing via \texttt  {select()}}{15}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Physical Channel Impairment Simulation}{15}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}System Architecture \& Visual Model Diagrams}{15}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Overall Cross-Layer System Architecture}{15}{subsection.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Overall System Architecture: Symmetrical Three-Tier Block Layout (Client, Channel, Server).}}{16}{figure.1}\protected@file@percent }
+\newlabel{fig:overall_arch}{{1}{16}{Overall System Architecture: Symmetrical Three-Tier Block Layout (Client, Channel, Server)}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Sequential Host Lifecycle Workflow}{16}{subsection.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Sequential Host Lifecycle: Staged Transition from Network Bootstrap to Application Teardown.}}{17}{figure.2}\protected@file@percent }
+\newlabel{fig:lifecycle_flow}{{2}{17}{Sequential Host Lifecycle: Staged Transition from Network Bootstrap to Application Teardown}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}DHCP Client Finite State Machine}{17}{subsection.4.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces DHCP Client Finite State Machine (RFC 2131) with Perimeter-Routed Expiration Loop.}}{18}{figure.3}\protected@file@percent }
+\newlabel{fig:dhcp_fsm}{{3}{18}{DHCP Client Finite State Machine (RFC 2131) with Perimeter-Routed Expiration Loop}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Stop-and-Wait ARQ Protocol Operation (Ladder Diagram)}{18}{subsection.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Stop-and-Wait ARQ Sequence: Clean Delivery, Loss Recovery via Timeout, and FCS Corruption Rejection.}}{18}{figure.4}\protected@file@percent }
+\newlabel{fig:arq_ladder}{{4}{18}{Stop-and-Wait ARQ Sequence: Clean Delivery, Loss Recovery via Timeout, and FCS Corruption Rejection}{figure.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Protocol Messages, Framing \& Execution Modes}{19}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Framing Header Layout}{19}{subsection.5.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 16-Byte Encapsulation Frame Header Structure (\texttt  {FrameHeader}).}}{19}{table.3}\protected@file@percent }
+\newlabel{tab:frame_layout}{{3}{19}{16-Byte Encapsulation Frame Header Structure (\texttt {FrameHeader})}{table.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Supported Execution Modes}{19}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Interactive Showcase Features}{19}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Core Modules \& Code Implementation}{20}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}\texttt  {include/common.hpp}: Foundation \& Telemetry Engine}{20}{subsection.6.1}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Telemetry Metrics and RFC 3550 Jitter Computation in Statistics}{20}{lstlisting.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}\texttt  {src/error\_detection.cpp}: Redundancy Mathematics}{20}{subsection.6.2}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}16-bit Internet Checksum Implementation (RFC 1071)}{20}{lstlisting.2}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}CRC Bit-by-Bit Division Engine}{21}{lstlisting.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}\texttt  {src/error\_injection.cpp}: Targeted Fault Injection}{21}{subsection.6.3}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}Checksum-Blind and CRC-Blind Malicious Error Injectors}{21}{lstlisting.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}\texttt  {src/bootp.cpp}: BOOTP Packet Serialization}{22}{subsection.6.4}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {5}BOOTP Packet Deserialization \& Vendor Option Parsing}{22}{lstlisting.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}\texttt  {src/dhcp.cpp}: 4-Way DORA Lease Pool Engine}{22}{subsection.6.5}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6}DHCP Dynamic Lease Pool Allocation}{22}{lstlisting.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.6}\texttt  {src/telnet.cpp}: NVT Parser \& Remote Shell}{23}{subsection.6.6}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {7}Telnet IAC State Machine Parser}{23}{lstlisting.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Detailed Step-by-Step Dry Runs \& Behavioral Analysis}{23}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Dry Run 1: BOOTP Network Bootstrap Sequence (UDP Port 6767)}{24}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Chronological Execution Flow:}{24}{section*.6}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8}Authentic Terminal Output: BOOTP Bootstrap Execution Trace}{24}{lstlisting.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Dry Run 2: DHCP 4-Way DORA Lease Negotiation (UDP Port 6769)}{25}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Chronological Execution Flow:}{25}{section*.7}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {9}Authentic Terminal Output: DHCP 4-Way DORA Negotiation Trace}{25}{lstlisting.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Dry Run 3: TELNET Interactive Terminal Session \& Stop-and-Wait ARQ}{26}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Chronological Execution Flow:}{26}{section*.8}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {10}Authentic Terminal Output: TELNET Session Execution Trace}{26}{lstlisting.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Dry Run 4: DHCP Lease Teardown \& Address Reclamation}{27}{subsection.7.4}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {11}Authentic Terminal Output: DHCP Lease Teardown Trace}{27}{lstlisting.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Dry Run 5: Network Impairment, ARQ Timeout Recovery \& CRC Detection}{27}{subsection.7.5}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {12}Authentic Terminal Output: Impairment, Loss Recovery, and Error Detection}{28}{lstlisting.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Empirical Results, Performance Benchmarks \& Plots}{28}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Multi-Protocol End-to-End Ladder Diagram}{28}{subsection.8.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces End-to-End Multi-Layer Protocol Flow: BOOTP $\to $ DHCP DORA $\to $ TELNET RFC 854 Session.}}{29}{figure.5}\protected@file@percent }
+\newlabel{fig:protocol_stack}{{5}{29}{End-to-End Multi-Layer Protocol Flow: BOOTP $\to $ DHCP DORA $\to $ TELNET RFC 854 Session}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Error Detection Matrix Benchmark ($7 \times 7$ Combinations)}{29}{subsection.8.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Empirical Detection Rates Across 49 Error Scheme and Injection Combinations (200 Trials Each).}}{30}{table.4}\protected@file@percent }
+\newlabel{tab:bench_matrix}{{4}{30}{Empirical Detection Rates Across 49 Error Scheme and Injection Combinations (200 Trials Each)}{table.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Detection Efficacy Heatmap: Explicitly Highlighting the Checksum Blind Spot and CRC Blind Spot.}}{30}{figure.6}\protected@file@percent }
+\newlabel{fig:heatmap}{{6}{30}{Detection Efficacy Heatmap: Explicitly Highlighting the Checksum Blind Spot and CRC Blind Spot}{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Flow Control Efficiency vs Channel Packet Loss}{30}{subsection.8.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Throughput Efficiency vs. Channel Loss Rate (Stop-and-Wait ARQ).}}{30}{table.5}\protected@file@percent }
+\newlabel{tab:eff_data}{{5}{30}{Throughput Efficiency vs. Channel Loss Rate (Stop-and-Wait ARQ)}{table.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Empirical Throughput Efficiency Curve vs. Theoretical Bound $\eta \approx (1 - p)$.}}{31}{figure.7}\protected@file@percent }
+\newlabel{fig:loss_plot}{{7}{31}{Empirical Throughput Efficiency Curve vs. Theoretical Bound $\eta \approx (1 - p)$}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Latency, RTT Distribution \& Network Jitter}{31}{subsection.8.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Round-Trip Time (RTT) Distribution and RFC 3550 Jitter Telemetry.}}{31}{figure.8}\protected@file@percent }
+\newlabel{fig:rtt_plot}{{8}{31}{Round-Trip Time (RTT) Distribution and RFC 3550 Jitter Telemetry}{figure.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.5}Cross-Layer Telemetry Dashboard \& Real-Time Execution Statistics}{31}{subsection.8.5}\protected@file@percent }
+\newlabel{lst:dashboard}{{13}{32}{Verbatim Client Cross-Layer Telemetry Dashboard}{lstlisting.13}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {13}Verbatim Client Cross-Layer Telemetry Dashboard}{32}{lstlisting.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.6}Bit-Exact File Reconstruction Verification}{33}{subsection.8.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Comparative Discussions \& Protocol Tradeoffs}{33}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}BOOTP vs. DHCP: Architectural Evolution}{33}{subsection.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}In-Band vs. Out-of-Band Session Signaling}{33}{subsection.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Computational Complexity: Checksum vs. CRC vs. Hamming}{33}{subsection.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10}Cross-Device Deployment \& Execution Guide}{33}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.1}Compilation}{34}{subsection.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.2}Execution Commands}{34}{subsection.10.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {11}Conclusion}{34}{section.11}\protected@file@percent }
+\gdef \@abspage@last{35}
